@@ -12,8 +12,9 @@ async function bootstrap() {
     await initDb();
     console.log('🚀 PostgreSQL initialization complete.');
 
+    // Verify SMTP transporter in background
     console.log('🔄 Verifying SMTP transporter...');
-    await verifySmtpConnection();
+    verifySmtpConnection().catch((e) => console.error('SMTP verification warning:', e?.message || e));
 
     // Start BullMQ Worker
     console.log('🔄 Starting BullMQ email delivery worker...');
