@@ -2,6 +2,7 @@ import nodemailer from 'nodemailer';
 import { config } from '../../config/env';
 
 export const transporter = nodemailer.createTransport({
+  pool: true,
   host: config.smtp.host,
   port: config.smtp.port,
   secure: config.smtp.secure,
@@ -9,6 +10,8 @@ export const transporter = nodemailer.createTransport({
     user: config.smtp.user,
     pass: config.smtp.pass,
   },
+  maxConnections: 2,
+  maxMessages: 50,
   connectionTimeout: 15000,
   greetingTimeout: 15000,
   socketTimeout: 20000,
