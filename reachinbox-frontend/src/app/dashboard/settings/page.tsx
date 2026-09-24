@@ -121,7 +121,7 @@ export default function SettingsPage() {
             <div>
               <p className="text-xs font-medium text-slate-900">{nameInput}</p>
               <p className="text-xs text-slate-500">{user.email}</p>
-              <span className="inline-block mt-0.5 text-[10px] font-medium text-slate-600 bg-slate-100 px-1.5 py-0.2 rounded border border-slate-200">
+              <span className="inline-block mt-0.5 text-[10px] font-medium text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
                 Connected &amp; Editable
               </span>
             </div>

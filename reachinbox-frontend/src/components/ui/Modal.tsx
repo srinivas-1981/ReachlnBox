@@ -73,7 +73,7 @@ export const Modal: React.FC<ModalProps> = ({
     >
       {/* Subtle Backdrop */}
       <div
-        className="fixed inset-0 bg-slate-900/20 backdrop-blur-2xs transition-opacity duration-150"
+        className="fixed inset-0 bg-slate-900/30 backdrop-blur-xs transition-opacity duration-150"
         onClick={isConfirmLoading ? undefined : onClose}
         aria-hidden="true"
       />

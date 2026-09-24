@@ -53,7 +53,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   return (
     <aside
       className={cn(
-        'hidden md:flex flex-col bg-white border-r border-slate-200 h-screen sticky top-0 shrink-0 select-none transition-all duration-200 ease-in-out',
+        'hidden md:flex flex-col bg-white border-r border-slate-200 h-screen sticky top-0 shrink-0 select-none transition-all duration-200 ease-in-out z-30',
         isCollapsed ? 'w-16' : 'w-56'
       )}
     >
@@ -168,7 +168,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     {!isCollapsed && badge !== undefined && (
                       <span
                         className={cn(
-                          'text-[10px] font-semibold px-1.5 py-0.2 rounded-full',
+                          'text-[10px] font-semibold px-1.5 py-0.5 rounded-full',
                           active
                             ? 'bg-emerald-100/80 text-emerald-800'
                             : 'bg-slate-100 text-slate-500'

@@ -146,7 +146,7 @@ export default function DashboardPage() {
               }`}
             >
               <span>Scheduled</span>
-              <span className="text-[10px] px-1 py-0.2 rounded-full bg-slate-200 text-slate-700">
+              <span className="text-[10px] px-1 py-0.5 rounded-full bg-slate-200 text-slate-700">
                 {scheduledEmails.length}
               </span>
             </button>
@@ -160,7 +160,7 @@ export default function DashboardPage() {
               }`}
             >
               <span>Sent</span>
-              <span className="text-[10px] px-1 py-0.2 rounded-full bg-slate-200 text-slate-700">
+              <span className="text-[10px] px-1 py-0.5 rounded-full bg-slate-200 text-slate-700">
                 {sentEmails.length}
               </span>
             </button>

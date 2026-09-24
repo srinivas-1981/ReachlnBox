@@ -63,7 +63,7 @@ export const Toggle: React.FC<ToggleProps> = ({
           <span
             aria-hidden="true"
             className={cn(
-              'text-[10px] font-medium px-1.5 py-0.2 rounded border select-none transition-colors',
+              'text-[10px] font-medium px-1.5 py-0.5 rounded border select-none transition-colors',
               checked
                 ? 'bg-slate-100 text-slate-800 border-slate-200'
                 : 'bg-white text-slate-400 border-slate-200'

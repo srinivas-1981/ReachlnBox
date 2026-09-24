@@ -2,6 +2,7 @@
 
 import React, { useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { X, SendHorizonal } from 'lucide-react';
 import { MAIN_NAV_ITEMS, SECONDARY_NAV_ITEMS } from './navConfig';
@@ -90,13 +91,20 @@ export const MobileNav: React.FC<MobileNavProps> = ({ isOpen, onClose, user, met
 
           {/* User Card */}
           <div className="flex items-center gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-100">
-            <div className="relative h-8 w-8 rounded-full overflow-hidden bg-slate-200 shrink-0">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={user.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80'}
-                alt={user.name}
-                className="h-full w-full object-cover"
-              />
+            <div className="relative h-8 w-8 rounded-full overflow-hidden bg-slate-200 shrink-0 border border-slate-300">
+              {user.avatarUrl ? (
+                <Image
+                  src={user.avatarUrl}
+                  alt={user.name}
+                  fill
+                  sizes="32px"
+                  className="object-cover"
+                />
+              ) : (
+                <div className="h-full w-full flex items-center justify-center bg-emerald-100 text-emerald-700 font-semibold text-xs">
+                  {user.name.charAt(0) || 'U'}
+                </div>
+              )}
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-xs font-semibold text-slate-900 truncate leading-tight">
@@ -153,7 +161,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({ isOpen, onClose, user, met
                     {badge !== undefined && (
                       <span
                         className={cn(
-                          'text-[10px] font-semibold px-1.5 py-0.2 rounded-full',
+                          'text-[10px] font-semibold px-1.5 py-0.5 rounded-full',
                           active
                             ? 'bg-emerald-100/80 text-emerald-800'
                             : 'bg-slate-100 text-slate-500'
