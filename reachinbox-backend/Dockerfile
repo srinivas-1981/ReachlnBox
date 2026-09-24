@@ -1,4 +1,4 @@
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 
 WORKDIR /app
 
@@ -8,28 +8,31 @@ COPY package*.json ./
 # Install all dependencies including devDependencies for TypeScript compilation
 RUN npm ci
 
-# Copy source code and TypeScript config
+# Copy TypeScript config and source
 COPY tsconfig.json ./
 COPY src ./src
 
 # Compile TypeScript to JavaScript
 RUN npm run build
 
+
 # Production Runner
-FROM node:20-alpine AS runner
+FROM node:22-alpine AS runner
 
 WORKDIR /app
 
 ENV NODE_ENV=production
 
-# Install production dependencies only
+# Copy dependency manifests
 COPY package*.json ./
-RUN npm ci --only=production
 
-# Copy compiled dist from builder
+# Install production dependencies only
+RUN npm ci --omit=dev
+
+# Copy compiled application
 COPY --from=builder /app/dist ./dist
 
 EXPOSE 5000
 
-# Start Express server and BullMQ worker automatically
+# Start Express server and BullMQ worker
 CMD ["node", "dist/index.js"]
