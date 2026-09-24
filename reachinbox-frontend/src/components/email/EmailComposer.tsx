@@ -202,6 +202,19 @@ export const EmailComposer: React.FC = () => {
       return;
     }
 
+    let effectiveStartTime: string;
+    if (mode === 'now') {
+      effectiveStartTime = new Date().toISOString();
+    } else {
+      const parsedDate = new Date(scheduleConfig.startTime);
+      if (isNaN(parsedDate.getTime())) {
+        toast.error('Invalid start date selected.', 'Validation Error');
+        setIsSubmitting(false);
+        return;
+      }
+      effectiveStartTime = parsedDate.toISOString();
+    }
+
     try {
       await campaignService.scheduleEmailCampaign({
         subject,
@@ -209,7 +222,7 @@ export const EmailComposer: React.FC = () => {
         recipients: effectiveRecipients,
         status: mode === 'now' ? 'sent' : 'scheduled',
         detectedLeadsCount: effectiveRecipients.length,
-        startTime: mode === 'now' ? new Date().toISOString() : scheduleConfig.startTime,
+        startTime: effectiveStartTime,
         delaySeconds: scheduleConfig.delaySeconds,
         hourlyLimit: scheduleConfig.hourlyLimit,
         attachments: attachments.map((a) => ({ name: a.name, size: a.size })),
