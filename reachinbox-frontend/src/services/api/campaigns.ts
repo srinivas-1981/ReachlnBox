@@ -50,19 +50,10 @@ export const campaignService = {
    * Submits the complete email campaign schedule configuration to the backend.
    */
   async scheduleEmailCampaign(payload: EmailCampaignPayload): Promise<{ id: string; message: string }> {
-    try {
-      const response = await apiClient<ApiResponse<{ id: string; message: string }>>('/campaigns/schedule', {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      });
-      return response.data;
-    } catch {
-      // Offline fallback: simulate API latency
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      return {
-        id: `camp_${Date.now()}`,
-        message: 'Campaign scheduled successfully',
-      };
-    }
+    const response = await apiClient<ApiResponse<{ id: string; message: string }>>('/campaigns/schedule', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+    return response.data;
   },
 };

@@ -7,10 +7,9 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { SlackConnection } from '@/types';
 import { slackService } from '@/services/api/slack';
-import { mockSlackConnection } from '@/lib/mockData';
 
 export default function SlackPage() {
-  const [connection, setConnection] = useState<SlackConnection>(mockSlackConnection);
+  const [connection, setConnection] = useState<SlackConnection>({ connected: false });
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 

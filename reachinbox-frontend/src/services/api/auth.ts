@@ -8,7 +8,6 @@
 
 import { User } from '@/types';
 import { apiClient } from './client';
-import { mockUser } from '@/lib/mockData';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1';
 
@@ -47,13 +46,12 @@ export const authService = {
   /**
    * Retrieves the currently authenticated user's profile.
    */
-  async getCurrentUser(): Promise<User> {
+  async getCurrentUser(): Promise<User | null> {
     try {
       const response = await apiClient<User>('/auth/me');
       return response;
     } catch {
-      // Return isolated mock user for UI development when backend is offline
-      return mockUser;
+      return null;
     }
   },
 
@@ -61,17 +59,10 @@ export const authService = {
    * Updates the user's name and/or role in PostgreSQL.
    */
   async updateUserProfile(data: { name?: string; role?: string }): Promise<User> {
-    try {
-      const response = await apiClient<{ success: boolean; data: User }>('/auth/me', {
-        method: 'PUT',
-        body: JSON.stringify(data),
-      });
-      return response.data;
-    } catch {
-      return {
-        ...mockUser,
-        ...data,
-      };
-    }
+    const response = await apiClient<{ success: boolean; data: User }>('/auth/me', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+    return response.data;
   },
 };

@@ -10,15 +10,26 @@ import { useToast } from '@/components/ui/Toast';
 import { authService } from '@/services/api/auth';
 import { slackService } from '@/services/api/slack';
 import { User, SlackConnection } from '@/types';
-import { mockUser, mockSlackConnection } from '@/lib/mockData';
+
+const initialEmptyUser: User = {
+  id: '',
+  name: '',
+  email: '',
+  avatarUrl: '',
+  role: 'Growth Lead',
+};
+
+const initialEmptySlack: SlackConnection = {
+  connected: false,
+};
 
 export default function SettingsPage() {
   const toast = useToast();
-  const [user, setUser] = useState<User>(mockUser);
-  const [nameInput, setNameInput] = useState<string>(mockUser.name);
-  const [roleInput, setRoleInput] = useState<string>(mockUser.role || 'Growth Lead');
+  const [user, setUser] = useState<User>(initialEmptyUser);
+  const [nameInput, setNameInput] = useState<string>('');
+  const [roleInput, setRoleInput] = useState<string>('Growth Lead');
   const [isSavingProfile, setIsSavingProfile] = useState<boolean>(false);
-  const [slack, setSlack] = useState<SlackConnection>(mockSlackConnection);
+  const [slack, setSlack] = useState<SlackConnection>(initialEmptySlack);
   const [defaultDelay, setDefaultDelay] = useState<number>(2);
   const [defaultHourlyLimit, setDefaultHourlyLimit] = useState<number>(200);
   const [isSaving, setIsSaving] = useState<boolean>(false);
@@ -27,7 +38,7 @@ export default function SettingsPage() {
     let ignore = false;
     Promise.all([authService.getCurrentUser(), slackService.getSlackStatus()])
       .then(([userData, slackData]) => {
-        if (!ignore) {
+        if (!ignore && userData) {
           setUser(userData);
           setNameInput(userData.name);
           setRoleInput(userData.role || 'Growth Lead');
