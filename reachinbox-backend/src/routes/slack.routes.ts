@@ -7,7 +7,9 @@ const router = Router();
 router.use(authenticate);
 
 router.get('/status', (req, res) => slackController.getStatus(req, res));
+router.post('/connect', (req, res) => slackController.connect(req, res));
 router.get('/connect', (req, res) => slackController.connect(req, res));
 router.post('/disconnect', (req, res) => slackController.disconnect(req, res));
+router.get('/disconnect', (req, res) => slackController.disconnect(req, res));
 
 export default router;

@@ -4,6 +4,7 @@ import { redisConnectionOptions } from '../../config/redis';
 import { storeService } from '../../services/store.service';
 import { rateLimiter } from '../limiter/rate.limiter';
 import { emailService } from '../email/email.service';
+import { slackService } from '../../services/slack.service';
 import { config } from '../../config/env';
 
 export async function processEmailJob(job: Job<EmailJobData>): Promise<void> {
@@ -31,6 +32,16 @@ export async function processEmailJob(job: Job<EmailJobData>): Promise<void> {
   if (!rateLimitStatus.allowed) {
     const delayMs = rateLimitStatus.retryAfterMs || 5000;
     console.log(`[WORKER] Rate limit reached. Rescheduling: ${scheduledEmailId} (next window in ${delayMs}ms)`);
+
+    slackService
+      .sendRateLimitNotification(userId, {
+        emailId: scheduledEmailId,
+        subject: email.subject,
+        recipient: email.recipient,
+        hourlyLimit,
+        retryAfterMs: delayMs,
+      })
+      .catch((err) => console.warn('[WORKER] Slack notification notice:', err?.message || err));
 
     await addEmailJob(scheduledEmailId, null, delayMs);
     return;

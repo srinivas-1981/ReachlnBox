@@ -18,11 +18,13 @@ export class SlackController {
 
   async connect(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      const userId = req.user?.id || 'usr_mitrajit';
+      const userId = req.user?.id || 'usr_reach_01';
       await storeService.setSlackStatus(true, userId);
+      const data = await storeService.getSlackStatus(userId);
       res.json({
         success: true,
         message: 'Slack workspace connected successfully',
+        data,
       });
     } catch (err: any) {
       res.status(500).json({ success: false, message: err.message });
@@ -31,11 +33,13 @@ export class SlackController {
 
   async disconnect(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      const userId = req.user?.id || 'usr_mitrajit';
+      const userId = req.user?.id || 'usr_reach_01';
       await storeService.setSlackStatus(false, userId);
+      const data = await storeService.getSlackStatus(userId);
       res.json({
         success: true,
         message: 'Slack workspace disconnected',
+        data,
       });
     } catch (err: any) {
       res.status(500).json({ success: false, message: err.message });

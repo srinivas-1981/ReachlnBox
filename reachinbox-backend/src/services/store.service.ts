@@ -397,7 +397,7 @@ export class StoreService {
       query += ` WHERE user_id = $1`;
       params.push(userId);
     }
-    query += ` LIMIT 1`;
+    query += ` ORDER BY connected_at DESC NULLS LAST LIMIT 1`;
 
     const res = await pool.query(query, params);
     if (res.rows.length === 0) {
@@ -410,23 +410,41 @@ export class StoreService {
     }
     const row = res.rows[0];
     return {
-      connected: row.connected,
-      workspaceName: row.workspaceName,
-      channelName: row.channelName,
-      connectedAt: row.connectedAt ? new Date(row.connectedAt).toISOString() : '',
+      connected: Boolean(row.connected),
+      workspaceName: row.workspaceName || 'ReachInbox Growth Team',
+      channelName: row.channelName || '#email-alerts',
+      connectedAt: row.connectedAt ? new Date(row.connectedAt).toISOString() : new Date().toISOString(),
     };
   }
 
-  async setSlackStatus(connected: boolean, userId: string = 'usr_mitrajit') {
-    const id = `slk_${userId}`;
-    await pool.query(
-      `
-      INSERT INTO slack_integrations (id, user_id, connected, workspace_name, channel_name, connected_at)
-      VALUES ($1, $2, $3, 'ReachInbox Growth Team', '#email-alerts', NOW())
-      ON CONFLICT (id) DO UPDATE SET connected = $3, connected_at = NOW()
-      `,
-      [id, userId, connected]
+  async setSlackStatus(connected: boolean, userId: string = 'usr_reach_01') {
+    const existing = await pool.query(
+      `SELECT id FROM slack_integrations WHERE user_id = $1 LIMIT 1`,
+      [userId]
     );
+
+    if (existing.rows.length > 0) {
+      await pool.query(
+        `
+        UPDATE slack_integrations
+        SET connected = $1,
+            workspace_name = 'ReachInbox Growth Team',
+            channel_name = '#email-alerts',
+            connected_at = NOW()
+        WHERE user_id = $2
+        `,
+        [connected, userId]
+      );
+    } else {
+      const id = `slk_${userId}`;
+      await pool.query(
+        `
+        INSERT INTO slack_integrations (id, user_id, connected, workspace_name, channel_name, connected_at)
+        VALUES ($1, $2, $3, 'ReachInbox Growth Team', '#email-alerts', NOW())
+        `,
+        [id, userId, connected]
+      );
+    }
   }
 
   async saveSlackIntegration(
