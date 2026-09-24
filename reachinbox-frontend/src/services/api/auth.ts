@@ -1,7 +1,13 @@
 import { User } from '@/types';
 import { apiClient } from './client';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1';
+export function getApiBaseUrl(): string {
+  const url = process.env.NEXT_PUBLIC_API_URL;
+  if (url && typeof url === 'string' && url.trim().length > 0) {
+    return url.trim().replace(/\/+$/, '');
+  }
+  return 'http://localhost:5000/api/v1';
+}
 
 export const authService = {
   async loginWithCredentials(email: string, password: string): Promise<{ user: User; token: string }> {
@@ -23,10 +29,11 @@ export const authService = {
   },
 
   loginWithGoogle(): void {
-    const oauthUrl = `${API_BASE_URL}/auth/google`;
+    const baseUrl = getApiBaseUrl();
+    const oauthUrl = `${baseUrl}/auth/google`;
 
     if (typeof window !== 'undefined') {
-      window.location.assign(oauthUrl);
+      window.location.href = oauthUrl;
     }
   },
 
