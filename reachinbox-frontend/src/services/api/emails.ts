@@ -5,7 +5,6 @@
 
 import { ScheduledEmail, SentEmail, DashboardMetrics, ApiResponse } from '@/types';
 import { apiClient } from './client';
-import { mockScheduledEmails, mockSentEmails, mockDashboardMetrics } from '@/lib/mockData';
 
 export const emailService = {
   /**
@@ -16,7 +15,12 @@ export const emailService = {
       const response = await apiClient<ApiResponse<DashboardMetrics>>('/emails/metrics');
       return response.data;
     } catch {
-      return mockDashboardMetrics;
+      return {
+        scheduledEmailsCount: 0,
+        sentEmailsCount: 0,
+        failedEmailsCount: 0,
+        emailsQueuedCount: 0,
+      };
     }
   },
 
@@ -28,13 +32,9 @@ export const emailService = {
       const response = await apiClient<ApiResponse<ScheduledEmail[]>>('/emails/scheduled', {
         params: { search },
       });
-      return response.data;
+      return response.data || [];
     } catch {
-      if (!search) return mockScheduledEmails;
-      const q = search.toLowerCase();
-      return mockScheduledEmails.filter(
-        (e) => e.recipient.toLowerCase().includes(q) || e.subject.toLowerCase().includes(q)
-      );
+      return [];
     }
   },
 
@@ -46,13 +46,9 @@ export const emailService = {
       const response = await apiClient<ApiResponse<SentEmail[]>>('/emails/sent', {
         params: { search },
       });
-      return response.data;
+      return response.data || [];
     } catch {
-      if (!search) return mockSentEmails;
-      const q = search.toLowerCase();
-      return mockSentEmails.filter(
-        (e) => e.recipient.toLowerCase().includes(q) || e.subject.toLowerCase().includes(q)
-      );
+      return [];
     }
   },
 
@@ -63,7 +59,7 @@ export const emailService = {
     try {
       await apiClient<void>(`/emails/scheduled/${id}/pause`, { method: 'POST' });
     } catch {
-      // Offline fallback
+      // Ignore or log
     }
   },
 
@@ -74,7 +70,7 @@ export const emailService = {
     try {
       await apiClient<void>(`/emails/scheduled/${id}/resume`, { method: 'POST' });
     } catch {
-      // Offline fallback
+      // Ignore or log
     }
   },
 
@@ -85,7 +81,7 @@ export const emailService = {
     try {
       await apiClient<void>(`/emails/scheduled/${id}`, { method: 'DELETE' });
     } catch {
-      // Offline fallback
+      // Ignore or log
     }
   },
 
@@ -96,7 +92,7 @@ export const emailService = {
     try {
       await apiClient<void>(`/emails/failed/${id}/retry`, { method: 'POST' });
     } catch {
-      // Offline fallback
+      // Ignore or log
     }
   },
 
@@ -106,14 +102,9 @@ export const emailService = {
   async getEmailById(id: string): Promise<ScheduledEmail | SentEmail | null> {
     try {
       const response = await apiClient<ApiResponse<ScheduledEmail | SentEmail>>(`/emails/${id}`);
-      return response.data;
+      return response.data || null;
     } catch {
-      const scheduled = mockScheduledEmails.find((e) => e.id === id);
-      if (scheduled) return scheduled;
-      const sent = mockSentEmails.find((e) => e.id === id);
-      if (sent) return sent;
-      // Fallback detail mock
-      return mockScheduledEmails[2];
+      return null;
     }
   },
 
@@ -124,7 +115,7 @@ export const emailService = {
     try {
       await apiClient<void>(`/emails/${id}/star`, { method: 'PATCH' });
     } catch {
-      // Offline fallback
+      // Ignore or log
     }
   },
 };

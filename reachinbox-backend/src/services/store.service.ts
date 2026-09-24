@@ -111,18 +111,21 @@ export class StoreService {
     const res = await pool.query(
       `
       SELECT 
-        id, recipient, subject, body, snippet,
-        scheduled_at as "scheduledAt",
-        sent_at as "sentAt",
-        delay_seconds as "delaySeconds",
-        hourly_limit as "hourlyLimit",
-        status, starred,
-        highlight_note as "highlightNote",
-        error_message as "errorMessage",
-        attachments,
-        created_at as "createdAt"
-      FROM emails
-      WHERE id = $1
+        e.id, e.user_id as "userId", e.recipient, e.subject, e.body, e.snippet,
+        e.scheduled_at as "scheduledAt",
+        e.sent_at as "sentAt",
+        e.delay_seconds as "delaySeconds",
+        e.hourly_limit as "hourlyLimit",
+        e.status, e.starred,
+        e.highlight_note as "highlightNote",
+        e.error_message as "errorMessage",
+        e.attachments,
+        e.created_at as "createdAt",
+        u.name as "senderName",
+        u.email as "senderEmail"
+      FROM emails e
+      LEFT JOIN users u ON e.user_id = u.id
+      WHERE e.id = $1
       `,
       [id]
     );
@@ -396,13 +399,16 @@ export class StoreService {
     const res = await pool.query(
       `
       SELECT 
-        id, user_id as "userId", recipient, subject, body, snippet,
-        scheduled_at as "scheduledAt",
-        delay_seconds as "delaySeconds",
-        hourly_limit as "hourlyLimit",
-        status, attachments
-      FROM emails
-      WHERE id = $1
+        e.id, e.user_id as "userId", e.recipient, e.subject, e.body, e.snippet,
+        e.scheduled_at as "scheduledAt",
+        e.delay_seconds as "delaySeconds",
+        e.hourly_limit as "hourlyLimit",
+        e.status, e.attachments,
+        u.name as "senderName",
+        u.email as "senderEmail"
+      FROM emails e
+      LEFT JOIN users u ON e.user_id = u.id
+      WHERE e.id = $1
       `,
       [id]
     );

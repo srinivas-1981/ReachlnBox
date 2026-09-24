@@ -3,6 +3,8 @@ import { transporter } from './smtp.client';
 import { config } from '../../config/env';
 
 export interface SendEmailOptions {
+  from?: string;
+  replyTo?: string;
   to: string;
   subject: string;
   text: string;
@@ -29,7 +31,8 @@ export class EmailService {
    */
   async sendEmail(options: SendEmailOptions): Promise<SendEmailResult> {
     const mailOptions = {
-      from: config.smtp.from,
+      from: options.from || config.smtp.from,
+      replyTo: options.replyTo,
       to: options.to,
       subject: options.subject,
       text: options.text,

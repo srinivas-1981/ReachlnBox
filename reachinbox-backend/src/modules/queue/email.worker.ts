@@ -52,7 +52,13 @@ export async function processEmailJob(job: Job<EmailJobData>): Promise<void> {
   // 5. Send using verified Nodemailer / Ethereal SMTP service
   console.log(`[Worker] Sending email: ${scheduledEmailId}`);
   try {
+    const fromAddress = email.senderName
+      ? `"${email.senderName}" <${config.smtp.from.replace(/^.*<([^>]+)>.*$/, '$1') || config.smtp.user}>`
+      : config.smtp.from;
+
     const sendResult = await emailService.sendEmail({
+      from: fromAddress,
+      replyTo: email.senderEmail || undefined,
       to: email.recipient,
       subject: email.subject,
       text: email.body,
@@ -61,6 +67,13 @@ export async function processEmailJob(job: Job<EmailJobData>): Promise<void> {
           <div>${email.body.replace(/\n/g, '<br/>')}</div>
         </div>
       `,
+      attachments: Array.isArray(email.attachments) && email.attachments.length > 0
+        ? email.attachments.map((att: any) => ({
+            filename: att.name || 'attachment',
+            content: att.content,
+            path: att.url,
+          }))
+        : undefined,
     });
 
     // 6. On success: update database status to "sent" with messageId
