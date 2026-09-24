@@ -38,11 +38,11 @@ export class EmailService {
     };
 
     const start = Date.now();
-    console.log(`[SMTP] sendMail start: to=${options.to}, subject="${options.subject}"`);
+    console.log('[SMTP] sendMail start');
     try {
       const info = await transporter.sendMail(mailOptions);
       const elapsedMs = Date.now() - start;
-      console.log(`[SMTP] sendMail completed: to=${options.to}, messageId=${info.messageId || 'unknown'}, elapsedMs=${elapsedMs}`);
+      console.log(`[SMTP] sendMail completed: elapsedMs=${elapsedMs}`);
       const previewUrl = nodemailer.getTestMessageUrl(info);
 
       return {
@@ -54,7 +54,7 @@ export class EmailService {
       };
     } catch (err: any) {
       const elapsedMs = Date.now() - start;
-      console.error(`[SMTP] sendMail failed: to=${options.to}, elapsedMs=${elapsedMs}, code=${err?.code || 'UNKNOWN'}, message=${err?.message || err}`);
+      console.error(`[SMTP] sendMail failed: elapsedMs=${elapsedMs}, code=${err?.code || 'UNKNOWN'}, message=${err?.message || err}`);
       throw err;
     }
   }

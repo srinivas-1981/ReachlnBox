@@ -78,10 +78,6 @@ export async function processEmailJob(job: Job<EmailJobData>): Promise<void> {
     } else {
       console.warn(`[WORKER] database update returned null for email ${scheduledEmailId}`);
     }
-
-    if (sendResult.previewUrl) {
-      console.log(`[WORKER] Preview URL: ${sendResult.previewUrl}`);
-    }
     console.log(`[WORKER] job completed: ${job.id}`);
   } catch (err: any) {
     console.error(`[WORKER] Email failed: ${scheduledEmailId} - ${err?.message || err}`);
