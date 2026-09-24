@@ -45,9 +45,8 @@ export const EmailInboxRow: React.FC<EmailInboxRowProps> = ({
   return (
     <Link
       href={`/dashboard/emails/${email.id}`}
-      className="group flex items-center gap-3 px-4 py-3 bg-white hover:bg-slate-50/80 border-b border-slate-100 transition-colors text-xs select-none cursor-pointer"
+      className="group flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-3 bg-white hover:bg-slate-50/80 border-b border-slate-100 transition-colors text-xs select-none cursor-pointer overflow-hidden"
     >
-
       <button
         type="button"
         onClick={(e) => {
@@ -55,7 +54,7 @@ export const EmailInboxRow: React.FC<EmailInboxRowProps> = ({
           e.stopPropagation();
           onToggleStar?.(email.id, e);
         }}
-        className="p-1 -ml-1 text-slate-300 hover:text-amber-400 group-hover:text-slate-400 transition-colors"
+        className="p-1 -ml-1 text-slate-300 hover:text-amber-400 group-hover:text-slate-400 transition-colors shrink-0"
         aria-label="Star email"
       >
         <Star
@@ -66,36 +65,36 @@ export const EmailInboxRow: React.FC<EmailInboxRowProps> = ({
         />
       </button>
 
-      <div className="w-28 sm:w-36 shrink-0 truncate">
+      <div className="w-20 sm:w-36 shrink-0 truncate">
         <span className="font-semibold text-slate-900 group-hover:text-emerald-700 transition-colors">
           To: {email.recipient.includes('@') ? email.recipient.split('@')[0] : email.recipient}
         </span>
       </div>
 
-      <div className="shrink-0 flex items-center">
+      <div className="flex-1 sm:flex-initial min-w-0 flex items-center">
         {isScheduled ? (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-amber-50 text-amber-700 border border-amber-200/80 max-w-[280px] sm:max-w-none truncate">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-amber-50 text-amber-700 border border-amber-200/80 max-w-full sm:max-w-none truncate">
             <Clock className="h-3 w-3 text-amber-600 shrink-0" />
             <span className="truncate">
               {formattedTime(scheduledEmail?.scheduledAt)} • {email.subject} • Scheduled
             </span>
           </span>
         ) : isSent ? (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/80 max-w-[280px] sm:max-w-none truncate">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/80 max-w-full sm:max-w-none truncate">
             <CheckCircle2 className="h-3 w-3 text-emerald-600 shrink-0" />
             <span className="truncate">
               Sent: {email.subject}
             </span>
           </span>
         ) : isFailed ? (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-rose-50 text-rose-700 border border-rose-200/80 max-w-[280px] sm:max-w-none truncate">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-rose-50 text-rose-700 border border-rose-200/80 max-w-full sm:max-w-none truncate">
             <AlertCircle className="h-3 w-3 text-rose-600 shrink-0" />
             <span className="truncate">
               Failed: {email.subject}
             </span>
           </span>
         ) : (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200 max-w-[280px] sm:max-w-none truncate">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200 max-w-full sm:max-w-none truncate">
             <span className="truncate">
               {email.status}: {email.subject}
             </span>
@@ -109,7 +108,7 @@ export const EmailInboxRow: React.FC<EmailInboxRowProps> = ({
         </span>
       </div>
 
-      <div className="shrink-0 text-slate-400 group-hover:text-slate-600 text-[11px] font-medium">
+      <div className="shrink-0 text-slate-400 group-hover:text-slate-600 text-[11px] font-medium hidden sm:block">
         <span>View</span>
       </div>
     </Link>

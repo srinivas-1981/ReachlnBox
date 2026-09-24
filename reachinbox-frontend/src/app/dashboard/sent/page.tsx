@@ -97,7 +97,7 @@ export default function SentEmailsPage() {
           placeholder="Filter by recipient or subject..."
         />
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 overflow-x-auto pb-1 sm:pb-0">
           {['all', 'sent', 'failed'].map((st) => (
             <button
               key={st}

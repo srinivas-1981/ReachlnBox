@@ -53,9 +53,9 @@ export const SlackConnectionCard: React.FC<SlackConnectionCardProps> = ({
 
   return (
     <div className="max-w-3xl space-y-4">
-      <div className="bg-white rounded-lg border border-slate-200 p-6 shadow-2xs">
+      <div className="bg-white rounded-lg border border-slate-200 p-4 sm:p-6 shadow-2xs">
 
-        <div className="flex items-start justify-between gap-4 pb-4 border-b border-slate-100">
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4 pb-4 border-b border-slate-100">
           <div className="flex items-center gap-3">
             <div className="h-8 w-8 rounded-md bg-slate-100 flex items-center justify-center text-slate-700 shrink-0">
               <MessageSquare className="h-4 w-4" />
@@ -68,7 +68,7 @@ export const SlackConnectionCard: React.FC<SlackConnectionCardProps> = ({
             </div>
           </div>
 
-          <div>
+          <div className="self-start sm:self-auto">
             {connection.connected ? (
               <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-100">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
@@ -123,7 +123,7 @@ export const SlackConnectionCard: React.FC<SlackConnectionCardProps> = ({
           )}
         </div>
 
-        <div className="pt-3.5 border-t border-slate-100 flex items-center justify-between">
+        <div className="pt-3.5 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-1.5 text-[11px] text-slate-400">
             <ShieldCheck className="h-3.5 w-3.5" />
             <span>OAuth 2.0 secured authentication</span>
@@ -134,7 +134,7 @@ export const SlackConnectionCard: React.FC<SlackConnectionCardProps> = ({
               variant="outline"
               size="sm"
               onClick={() => setShowDisconnectModal(true)}
-              className="text-rose-600 hover:text-rose-700 hover:bg-rose-50 border-rose-200"
+              className="text-rose-600 hover:text-rose-700 hover:bg-rose-50 border-rose-200 w-full sm:w-auto"
             >
               Disconnect Slack
             </Button>
@@ -145,6 +145,7 @@ export const SlackConnectionCard: React.FC<SlackConnectionCardProps> = ({
               onClick={handleConnect}
               isLoading={isLoading}
               loadingText="Connecting..."
+              className="w-full sm:w-auto"
             >
               Connect Slack
             </Button>

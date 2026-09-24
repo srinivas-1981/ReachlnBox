@@ -114,8 +114,8 @@ export const EmailDetailView: React.FC<EmailDetailViewProps> = ({ email }) => {
         </div>
       </div>
 
-      <div className="px-5 sm:px-8 py-5 border-b border-slate-100">
-        <div className="flex items-start justify-between gap-4">
+      <div className="px-4 sm:px-8 py-5 border-b border-slate-100">
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-4">
           <div className="flex items-start gap-3.5 min-w-0">
 
             <div className="h-9 w-9 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-2xs">
@@ -143,7 +143,7 @@ export const EmailDetailView: React.FC<EmailDetailViewProps> = ({ email }) => {
                 </button>
 
                 {isRecipientOpen && (
-                  <div className="absolute top-6 left-0 z-20 bg-white border border-slate-200 rounded-md shadow-lg p-3 text-xs text-slate-600 min-w-[240px] space-y-1 animate-in fade-in-50">
+                  <div className="absolute top-6 left-0 z-20 bg-white border border-slate-200 rounded-md shadow-lg p-3 text-xs text-slate-600 min-w-[240px] max-w-[calc(100vw-3rem)] space-y-1 animate-in fade-in-50">
                     <p><span className="font-medium text-slate-900">from:</span> {senderName} &lt;{senderEmail}&gt;</p>
                     <p><span className="font-medium text-slate-900">to:</span> {email.recipient}</p>
                     <p><span className="font-medium text-slate-900">subject:</span> {email.subject}</p>
@@ -155,7 +155,7 @@ export const EmailDetailView: React.FC<EmailDetailViewProps> = ({ email }) => {
             </div>
           </div>
 
-          <div className="shrink-0 text-xs text-slate-400 font-medium">
+          <div className="shrink-0 text-xs text-slate-400 font-medium sm:text-right">
             {formattedDate()}
           </div>
         </div>

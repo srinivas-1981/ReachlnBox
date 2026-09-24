@@ -205,8 +205,8 @@ export default function SettingsPage() {
           </div>
         </form>
 
-        <div className="bg-white rounded-lg border border-slate-200 p-5 sm:p-6 shadow-2xs">
-          <div className="flex items-center justify-between">
+        <div className="bg-white rounded-lg border border-slate-200 p-4 sm:p-6 shadow-2xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <p className="text-xs font-medium text-slate-900">Slack Notifications</p>
               <p className="text-xs text-slate-500 mt-0.5">
@@ -216,8 +216,8 @@ export default function SettingsPage() {
               </p>
             </div>
 
-            <Link href="/dashboard/slack">
-              <Button variant="outline" size="sm">
+            <Link href="/dashboard/slack" className="w-full sm:w-auto">
+              <Button variant="outline" size="sm" className="w-full sm:w-auto">
                 {slack.connected ? 'Manage' : 'Connect'}
               </Button>
             </Link>

@@ -58,9 +58,9 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center px-4 py-12 bg-slate-50/70">
+    <div className="min-h-screen flex flex-col justify-center items-center px-4 py-8 sm:py-12 bg-slate-50/70">
       <div className="w-full max-w-sm">
-        <div className="bg-white py-8 px-7 rounded-xl border border-slate-200/90 shadow-xs">
+        <div className="bg-white py-6 sm:py-8 px-4 sm:px-7 rounded-xl border border-slate-200/90 shadow-xs">
           <div className="text-center">
             <div className="mx-auto h-10 w-10 rounded-lg bg-emerald-600 flex items-center justify-center text-white mb-3.5 shadow-2xs">
               <SendHorizonal className="h-5 w-5 transform -rotate-12" />

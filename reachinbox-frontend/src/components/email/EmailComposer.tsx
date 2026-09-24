@@ -246,7 +246,7 @@ export const EmailComposer: React.FC = () => {
   return (
     <div className="space-y-5">
 
-      <div className="flex items-center justify-between pb-3.5 border-b border-slate-200 bg-white px-2">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3.5 border-b border-slate-200 bg-white px-2">
         <div className="flex items-center gap-2.5">
           <Link
             href="/dashboard"
@@ -261,7 +261,7 @@ export const EmailComposer: React.FC = () => {
           </h1>
         </div>
 
-        <div className="flex items-center gap-2 relative">
+        <div className="flex items-center gap-2 relative flex-wrap sm:flex-nowrap">
 
           <input
             ref={fileInputRef}
@@ -292,7 +292,7 @@ export const EmailComposer: React.FC = () => {
             </button>
 
             {isSendLaterOpen && (
-              <div className="absolute right-0 top-9 z-30 w-72 bg-white rounded-lg border border-slate-200 p-4 shadow-xl text-xs space-y-3 animate-in fade-in-50 zoom-in-95">
+              <div className="absolute right-0 top-9 z-30 w-72 max-w-[calc(100vw-2rem)] bg-white rounded-lg border border-slate-200 p-4 shadow-xl text-xs space-y-3 animate-in fade-in-50 zoom-in-95">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                   <span className="font-semibold text-slate-900">Send Later</span>
                   <button
@@ -473,7 +473,7 @@ export const EmailComposer: React.FC = () => {
               />
             </div>
 
-            <div className="flex items-center gap-6 px-4 py-2 bg-slate-50/50 text-xs text-slate-600">
+            <div className="flex flex-wrap items-center gap-4 sm:gap-6 px-4 py-2 bg-slate-50/50 text-xs text-slate-600">
               <div className="flex items-center gap-2">
                 <span className="text-slate-500">Delay between 2 emails:</span>
                 <input
@@ -513,7 +513,7 @@ export const EmailComposer: React.FC = () => {
               />
 
               <div className="pt-3 border-t border-slate-100 flex items-center justify-between flex-wrap gap-2 text-slate-500 text-xs">
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 flex-wrap">
                   <button
                     type="button"
                     onClick={() => toast.info('Undo')}
