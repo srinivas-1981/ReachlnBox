@@ -1,5 +1,5 @@
 import { app } from './app';
-import { config } from './config/env';
+import { config, validateProductionConfig } from './config/env';
 import { initDb, pool } from './config/db';
 import { redisClient } from './config/redis';
 import { emailQueue } from './modules/queue/email.queue';
@@ -8,9 +8,11 @@ import { verifySmtpConnection } from './modules/email/smtp.client';
 
 async function bootstrap() {
   try {
-    console.log(' Initializing PostgreSQL database tables and connections...');
+    validateProductionConfig();
+
+    console.log('Initializing PostgreSQL database tables and connections...');
     await initDb();
-    console.log(' PostgreSQL initialization complete.');
+    console.log('PostgreSQL initialization complete.');
 
     console.log(' Verifying SMTP transporter...');
     verifySmtpConnection().catch((e) => console.error('SMTP verification warning:', e?.message || e));

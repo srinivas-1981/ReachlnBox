@@ -1,4 +1,9 @@
 services:
+  - type: redis
+    name: reachinbox-redis
+    plan: free
+    ipAllowList: []
+
   - type: web
     name: reachinbox-backend
     runtime: node

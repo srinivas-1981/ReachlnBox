@@ -1,9 +1,29 @@
 import { Pool } from 'pg';
-import { config } from './env';
+import { config, isPlaceholderOrInvalid } from './env';
+
+export function getDatabaseUrl(): string {
+  const isProduction = (process.env.NODE_ENV || 'development') === 'production';
+  const dbUrl = (process.env.DATABASE_URL || config.databaseUrl || '').trim();
+
+  if (isPlaceholderOrInvalid(dbUrl)) {
+    if (isProduction) {
+      throw new Error('DATABASE_URL is not configured for production. Please configure DATABASE_URL in your Render environment variables.');
+    }
+    return 'postgresql://postgres:password@localhost:5432/reachinbox';
+  }
+
+  if (isProduction && (dbUrl.includes('localhost') || dbUrl.includes('127.0.0.1') || dbUrl.includes('@base') || dbUrl.endsWith('@base/reachinbox'))) {
+    throw new Error('DATABASE_URL is not configured for production. Localhost/placeholder database URLs cannot be used in production.');
+  }
+
+  return dbUrl;
+}
+
+const dbConnectionString = getDatabaseUrl();
 
 export const pool = new Pool({
-  connectionString: config.databaseUrl,
-  ssl: (process.env.NODE_ENV === 'production' || process.env.DATABASE_URL?.includes('render.com') || process.env.DATABASE_SSL === 'true')
+  connectionString: dbConnectionString,
+  ssl: (process.env.NODE_ENV === 'production' || dbConnectionString.includes('render.com') || process.env.DATABASE_SSL === 'true')
     ? { rejectUnauthorized: false }
     : undefined,
 });
