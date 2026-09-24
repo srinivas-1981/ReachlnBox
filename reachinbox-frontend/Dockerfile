@@ -9,6 +9,7 @@ RUN npm install
 COPY tsconfig.json ./
 COPY next.config.ts ./
 COPY eslint.config.mjs ./
+COPY postcss.config.mjs ./
 COPY src ./src
 
 ARG NEXT_PUBLIC_API_URL=http://localhost:5000/api/v1
@@ -30,6 +31,7 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/src ./src
 COPY --from=builder /app/next.config.ts ./
 COPY --from=builder /app/tsconfig.json ./
+COPY --from=builder /app/postcss.config.mjs ./
 
 EXPOSE 3000
 
