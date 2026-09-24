@@ -14,8 +14,8 @@ async function bootstrap() {
     await initDb();
     console.log('PostgreSQL initialization complete.');
 
-    console.log(' Verifying SMTP transporter...');
-    verifySmtpConnection().catch((e) => console.error('SMTP verification warning:', e?.message || e));
+    console.log(' Performing non-blocking SMTP transporter check in background...');
+    verifySmtpConnection().catch((e) => console.warn('SMTP verification background notice:', e?.message || e));
 
     console.log(' Starting BullMQ email delivery worker...');
     const worker = startEmailWorker();

@@ -20,10 +20,10 @@ export const transporter = nodemailer.createTransport({
 export async function verifySmtpConnection(): Promise<boolean> {
   try {
     await transporter.verify();
-    console.log('[SMTP] Connection verified successfully');
+    console.log('[SMTP] Startup verification: connection verified successfully');
     return true;
   } catch (error: any) {
-    console.error(`[SMTP] Verification failed: code=${error?.code || 'UNKNOWN'}, message=${error?.message || error}`);
+    console.warn(`[SMTP] Startup verification notice: code=${error?.code || 'UNKNOWN'}, message=${error?.message || error} (Nodemailer will establish connections on demand during sendMail)`);
     return false;
   }
 }
