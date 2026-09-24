@@ -8,46 +8,47 @@ import { config } from '../../config/env';
 
 export async function processEmailJob(job: Job<EmailJobData>): Promise<void> {
   const { scheduledEmailId } = job.data;
-  console.log(`[Worker] Processing scheduled email: ${scheduledEmailId}`);
+  console.log(`[WORKER] job received: ${job.id}`);
+  console.log(`[WORKER] email ID: ${scheduledEmailId}`);
 
   const email = await storeService.getEmailForDispatch(scheduledEmailId);
   if (!email) {
-    console.log(`[Worker] Email ${scheduledEmailId} not found in database, discarding job.`);
+    console.log(`[WORKER] Email ${scheduledEmailId} not found in database, discarding job.`);
     return;
   }
 
-  if (email.status !== 'scheduled') {
-    console.log(`[Worker] Email ${scheduledEmailId} status is '${email.status}', skipping dispatch.`);
+  if (email.status === 'sent' || email.status === 'failed' || email.status === 'paused') {
+    console.log(`[WORKER] Email ${scheduledEmailId} status is '${email.status}', skipping dispatch.`);
     return;
   }
 
   const userId = email.userId || 'usr_reach_01';
   const hourlyLimit = email.hourlyLimit || 50;
 
+  console.log(`[WORKER] rate limit check: ${scheduledEmailId}`);
   const rateLimitStatus = await rateLimiter.checkRateLimit(userId, hourlyLimit, scheduledEmailId);
 
   if (!rateLimitStatus.allowed) {
     const delayMs = rateLimitStatus.retryAfterMs || 5000;
-    console.log(`[Worker] Rate limit reached. Rescheduling: ${scheduledEmailId} (next window in ${delayMs}ms)`);
+    console.log(`[WORKER] Rate limit reached. Rescheduling: ${scheduledEmailId} (next window in ${delayMs}ms)`);
 
     await addEmailJob(scheduledEmailId, null, delayMs);
     return;
   }
 
-  console.log(`[Worker] Rate limit allowed: ${scheduledEmailId}`);
-
   const claimed = await storeService.claimEmailForProcessing(scheduledEmailId);
   if (!claimed) {
-    console.log(`[Worker] Email ${scheduledEmailId} could not be claimed (already processing or modified), skipping.`);
+    console.log(`[WORKER] Email ${scheduledEmailId} could not be claimed (already processing or modified), skipping.`);
     return;
   }
+  console.log(`[WORKER] status changed to processing: ${scheduledEmailId}`);
 
-  console.log(`[Worker] Sending email: ${scheduledEmailId}`);
   try {
     const fromAddress = email.senderName
       ? `"${email.senderName}" <${config.smtp.from.replace(/^.*<([^>]+)>.*$/, '$1') || config.smtp.user}>`
       : config.smtp.from;
 
+    console.log(`[WORKER] starting SMTP send: ${scheduledEmailId}`);
     const sendResult = await emailService.sendEmail({
       from: fromAddress,
       replyTo: email.senderEmail || undefined,
@@ -67,20 +68,30 @@ export async function processEmailJob(job: Job<EmailJobData>): Promise<void> {
           }))
         : undefined,
     });
+    console.log(`[WORKER] SMTP send completed: ${scheduledEmailId}`);
+    console.log(`[WORKER] provider message ID: ${sendResult.messageId}`);
 
-    await storeService.markEmailSent(scheduledEmailId, sendResult.messageId);
-    console.log(`[Worker] Email sent successfully: ${scheduledEmailId} (Message ID: ${sendResult.messageId})`);
-    if (sendResult.previewUrl) {
-      console.log(`[Worker] Preview URL: ${sendResult.previewUrl}`);
+    console.log(`[WORKER] updating database to sent: ${scheduledEmailId}`);
+    const updated = await storeService.markEmailSent(scheduledEmailId, sendResult.messageId);
+    if (updated) {
+      console.log(`[WORKER] database updated to sent: ${scheduledEmailId}`);
+    } else {
+      console.warn(`[WORKER] database update returned null for email ${scheduledEmailId}`);
     }
+
+    if (sendResult.previewUrl) {
+      console.log(`[WORKER] Preview URL: ${sendResult.previewUrl}`);
+    }
+    console.log(`[WORKER] job completed: ${job.id}`);
   } catch (err: any) {
-    console.error(`[Worker] Email failed: ${scheduledEmailId} - ${err?.message || err}`);
+    console.error(`[WORKER] Email failed: ${scheduledEmailId} - ${err?.message || err}`);
 
     const isFinalAttempt = (job.attemptsMade + 1) >= (job.opts.attempts || 3);
     if (isFinalAttempt) {
+      console.log(`[WORKER] Final attempt reached. Marking email ${scheduledEmailId} as failed in database.`);
       await storeService.markEmailFailed(scheduledEmailId, err?.message || 'SMTP delivery failure');
     } else {
-
+      console.log(`[WORKER] Resetting email ${scheduledEmailId} status back to scheduled for BullMQ retry.`);
       await storeService.resetEmailToScheduled(scheduledEmailId);
     }
 

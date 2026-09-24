@@ -533,61 +533,81 @@ export class StoreService {
   }
 
   async claimEmailForProcessing(id: string) {
-    const res = await pool.query(
-      `
-      UPDATE emails
-      SET status = 'processing', updated_at = NOW()
-      WHERE id = $1 AND status = 'scheduled'
-      RETURNING id, user_id as "userId", recipient, subject, body, status, hourly_limit as "hourlyLimit"
-      `,
-      [id]
-    );
-    return res.rows[0] || null;
+    try {
+      const res = await pool.query(
+        `
+        UPDATE emails
+        SET status = 'processing', updated_at = NOW()
+        WHERE id = $1 AND (status = 'scheduled' OR status = 'processing')
+        RETURNING id, user_id as "userId", recipient, subject, body, status, hourly_limit as "hourlyLimit"
+        `,
+        [id]
+      );
+      return res.rows[0] || null;
+    } catch (dbErr: any) {
+      console.error(`[DATABASE] Failed to claim email ${id} for processing:`, dbErr?.message || dbErr);
+      throw dbErr;
+    }
   }
 
-  async markEmailSent(id: string, providerMessageId: string) {
-    const res = await pool.query(
-      `
-      UPDATE emails
-      SET
-        status = 'sent',
-        sent_at = NOW(),
-        provider_message_id = $2,
-        error_message = NULL,
-        updated_at = NOW()
-      WHERE id = $1
-      RETURNING id, status, sent_at as "sentAt", provider_message_id as "providerMessageId"
-      `,
-      [id, providerMessageId]
-    );
-    return res.rows[0] || null;
+  async markEmailSent(id: string, providerMessageId?: string | null) {
+    try {
+      const res = await pool.query(
+        `
+        UPDATE emails
+        SET
+          status = 'sent',
+          sent_at = NOW(),
+          provider_message_id = $2,
+          error_message = NULL,
+          updated_at = NOW()
+        WHERE id = $1
+        RETURNING id, status, sent_at as "sentAt", provider_message_id as "providerMessageId"
+        `,
+        [id, providerMessageId || null]
+      );
+      return res.rows[0] || null;
+    } catch (dbErr: any) {
+      console.error(`[DATABASE] Failed to update email ${id} to sent:`, dbErr?.message || dbErr);
+      throw dbErr;
+    }
   }
 
-  async markEmailFailed(id: string, errorMessage: string) {
-    const res = await pool.query(
-      `
-      UPDATE emails
-      SET
-        status = 'failed',
-        error_message = $2,
-        updated_at = NOW()
-      WHERE id = $1
-      RETURNING id, status, error_message as "errorMessage"
-      `,
-      [id, errorMessage]
-    );
-    return res.rows[0] || null;
+  async markEmailFailed(id: string, errorMessage?: string | null) {
+    try {
+      const res = await pool.query(
+        `
+        UPDATE emails
+        SET
+          status = 'failed',
+          error_message = $2,
+          updated_at = NOW()
+        WHERE id = $1
+        RETURNING id, status, error_message as "errorMessage"
+        `,
+        [id, errorMessage || 'Unknown delivery failure']
+      );
+      return res.rows[0] || null;
+    } catch (dbErr: any) {
+      console.error(`[DATABASE] Failed to update email ${id} to failed:`, dbErr?.message || dbErr);
+      throw dbErr;
+    }
   }
 
   async resetEmailToScheduled(id: string) {
-    await pool.query(
-      `
-      UPDATE emails
-      SET status = 'scheduled', updated_at = NOW()
-      WHERE id = $1 AND status = 'processing'
-      `,
-      [id]
-    );
+    try {
+      await pool.query(
+        `
+        UPDATE emails
+        SET status = 'scheduled', updated_at = NOW()
+        WHERE id = $1 AND status = 'processing'
+        `,
+        [id]
+      );
+    } catch (dbErr: any) {
+      console.error(`[DATABASE] Failed to reset email ${id} to scheduled:`, dbErr?.message || dbErr);
+      throw dbErr;
+    }
   }
 }
 

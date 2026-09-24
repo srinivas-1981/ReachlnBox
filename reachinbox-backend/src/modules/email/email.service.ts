@@ -41,7 +41,7 @@ export class EmailService {
     const previewUrl = nodemailer.getTestMessageUrl(info);
 
     return {
-      messageId: info.messageId,
+      messageId: info.messageId || `msg_${Date.now()}`,
       previewUrl,
       response: info.response || '',
       accepted: (info.accepted || []) as string[],
