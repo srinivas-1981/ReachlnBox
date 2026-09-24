@@ -438,6 +438,7 @@ export const EmailComposer: React.FC = () => {
                   value={toInput}
                   onChange={(e) => setToInput(e.target.value)}
                   onKeyDown={handleAddRecipient}
+                  onBlur={handleInputBlur}
                   placeholder={recipients.length === 0 ? "Add recipients... (press Enter)" : "Add more..."}
                   className="flex-1 min-w-[140px] text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none py-1 bg-transparent"
                 />

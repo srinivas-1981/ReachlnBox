@@ -31,6 +31,7 @@ export default function DashboardLayout({
   // Sidebar must always start collapsed on initial mount / refresh
   // Route change automatically collapses the sidebar
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsSidebarCollapsed(true);
   }, [pathname]);
 
