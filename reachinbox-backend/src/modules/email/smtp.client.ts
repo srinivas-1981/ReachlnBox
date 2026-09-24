@@ -15,12 +15,13 @@ export const transporter = nodemailer.createTransport({
 });
 
 export async function verifySmtpConnection(): Promise<boolean> {
+  console.log(`[SMTP] Initializing connection check: host=${config.smtp.host}, port=${config.smtp.port}, secure=${config.smtp.secure}, userExists=${Boolean(config.smtp.user)}`);
   try {
     await transporter.verify();
-    console.log(' SMTP server is ready to take our messages');
+    console.log(`[SMTP] Verification SUCCESS: ${config.smtp.host}:${config.smtp.port} is ready`);
     return true;
   } catch (error: any) {
-    console.error(' SMTP connection verification failed:', error?.message || 'Unknown SMTP error');
+    console.error(`[SMTP] Verification FAILED: host=${config.smtp.host}, port=${config.smtp.port}, secure=${config.smtp.secure}, userExists=${Boolean(config.smtp.user)}, code=${error?.code || 'UNKNOWN'}, message=${error?.message || error}`);
     return false;
   }
 }
