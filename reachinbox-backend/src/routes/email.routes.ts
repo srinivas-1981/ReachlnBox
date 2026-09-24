@@ -13,8 +13,11 @@ router.get('/:id', (req, res) => emailController.getById(req, res));
 
 router.post('/scheduled/:id/pause', (req, res) => emailController.pauseScheduled(req, res));
 router.post('/scheduled/:id/resume', (req, res) => emailController.resumeScheduled(req, res));
+router.post('/scheduled/:id/reschedule', (req, res) => emailController.rescheduleEmail(req, res));
+router.patch('/scheduled/:id/reschedule', (req, res) => emailController.rescheduleEmail(req, res));
 router.delete('/scheduled/:id', (req, res) => emailController.deleteScheduled(req, res));
 router.post('/failed/:id/retry', (req, res) => emailController.retryFailed(req, res));
+router.post('/sent/:id/retry', (req, res) => emailController.retryFailed(req, res));
 router.patch('/:id/star', (req, res) => emailController.toggleStar(req, res));
 
 export default router;

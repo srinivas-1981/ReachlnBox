@@ -159,15 +159,46 @@ export class StoreService {
     return (res.rowCount ?? 0) > 0;
   }
 
-  async resumeScheduled(id: string, userId?: string): Promise<boolean> {
-    let query = `UPDATE emails SET status = 'scheduled' WHERE id = $1`;
-    const params: any[] = [id];
+  async resumeScheduled(id: string, userId?: string, newScheduledAt?: string | Date): Promise<boolean> {
+    let selectQuery = `SELECT id, scheduled_at as "scheduledAt", status FROM emails WHERE id = $1`;
+    const selectParams: any[] = [id];
     if (userId) {
-      query += ` AND user_id = $2`;
-      params.push(userId);
+      selectQuery += ` AND user_id = $2`;
+      selectParams.push(userId);
     }
-    const res = await pool.query(query, params);
-    return (res.rowCount ?? 0) > 0;
+    const existing = await pool.query(selectQuery, selectParams);
+    if (existing.rows.length === 0) {
+      return false;
+    }
+
+    const row = existing.rows[0];
+    let targetScheduledAt: Date;
+
+    if (newScheduledAt) {
+      targetScheduledAt = new Date(newScheduledAt);
+    } else if (row.scheduledAt && new Date(row.scheduledAt).getTime() > Date.now()) {
+      targetScheduledAt = new Date(row.scheduledAt);
+    } else {
+      targetScheduledAt = new Date();
+    }
+
+    let updateQuery = `UPDATE emails SET status = 'scheduled', scheduled_at = $1, error_message = NULL WHERE id = $2`;
+    const updateParams: any[] = [targetScheduledAt.toISOString(), id];
+    if (userId) {
+      updateQuery += ` AND user_id = $3`;
+      updateParams.push(userId);
+    }
+    const updateRes = await pool.query(updateQuery, updateParams);
+    if ((updateRes.rowCount ?? 0) === 0) {
+      return false;
+    }
+
+    await addEmailJob(id, targetScheduledAt);
+    return true;
+  }
+
+  async rescheduleEmail(id: string, newScheduledAt: string | Date, userId?: string): Promise<boolean> {
+    return this.resumeScheduled(id, userId, newScheduledAt);
   }
 
   async deleteScheduled(id: string, userId?: string): Promise<boolean> {
@@ -182,14 +213,31 @@ export class StoreService {
   }
 
   async retryFailed(id: string, userId?: string): Promise<boolean> {
-    let query = `UPDATE emails SET status = 'sent', error_message = NULL, sent_at = NOW() WHERE id = $1`;
-    const params: any[] = [id];
+    let selectQuery = `SELECT id, status FROM emails WHERE id = $1`;
+    const selectParams: any[] = [id];
     if (userId) {
-      query += ` AND user_id = $2`;
+      selectQuery += ` AND user_id = $2`;
+      selectParams.push(userId);
+    }
+    const existing = await pool.query(selectQuery, selectParams);
+    if (existing.rows.length === 0) {
+      return false;
+    }
+
+    const now = new Date();
+    let query = `UPDATE emails SET status = 'scheduled', scheduled_at = $1, error_message = NULL, sent_at = NULL WHERE id = $2`;
+    const params: any[] = [now.toISOString(), id];
+    if (userId) {
+      query += ` AND user_id = $3`;
       params.push(userId);
     }
     const res = await pool.query(query, params);
-    return (res.rowCount ?? 0) > 0;
+    if ((res.rowCount ?? 0) === 0) {
+      return false;
+    }
+
+    await addEmailJob(id, now);
+    return true;
   }
 
   async toggleStar(id: string, userId?: string): Promise<boolean> {

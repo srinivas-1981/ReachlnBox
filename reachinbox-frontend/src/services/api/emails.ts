@@ -47,9 +47,23 @@ export const emailService = {
     }
   },
 
-  async resumeScheduledEmail(id: string): Promise<void> {
+  async resumeScheduledEmail(id: string, scheduledAt?: string): Promise<void> {
     try {
-      await apiClient<void>(`/emails/scheduled/${id}/resume`, { method: 'POST' });
+      await apiClient<void>(`/emails/scheduled/${id}/resume`, {
+        method: 'POST',
+        data: scheduledAt ? { scheduled_at: scheduledAt } : undefined,
+      });
+    } catch {
+
+    }
+  },
+
+  async rescheduleScheduledEmail(id: string, scheduledAt: string): Promise<void> {
+    try {
+      await apiClient<void>(`/emails/scheduled/${id}/reschedule`, {
+        method: 'POST',
+        data: { scheduled_at: scheduledAt },
+      });
     } catch {
 
     }

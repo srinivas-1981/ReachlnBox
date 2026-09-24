@@ -84,12 +84,33 @@ export class EmailController {
     try {
       const id = req.params.id as string;
       const userId = req.user?.id;
-      const success = await storeService.resumeScheduled(id, userId);
+      const newScheduledAt = req.body?.scheduled_at || req.body?.scheduledAt;
+      const success = await storeService.resumeScheduled(id, userId, newScheduledAt);
       if (!success) {
         res.status(404).json({ success: false, message: 'Scheduled email not found' });
         return;
       }
-      res.json({ success: true, message: 'Scheduled email resumed' });
+      res.json({ success: true, message: 'Scheduled email resumed and queued' });
+    } catch (err: any) {
+      res.status(500).json({ success: false, message: err.message });
+    }
+  }
+
+  async rescheduleEmail(req: AuthenticatedRequest, res: Response): Promise<void> {
+    try {
+      const id = req.params.id as string;
+      const userId = req.user?.id;
+      const newScheduledAt = req.body?.scheduled_at || req.body?.scheduledAt;
+      if (!newScheduledAt) {
+        res.status(400).json({ success: false, message: 'scheduled_at is required for rescheduling' });
+        return;
+      }
+      const success = await storeService.rescheduleEmail(id, newScheduledAt, userId);
+      if (!success) {
+        res.status(404).json({ success: false, message: 'Scheduled email not found' });
+        return;
+      }
+      res.json({ success: true, message: 'Scheduled email rescheduled and queued' });
     } catch (err: any) {
       res.status(500).json({ success: false, message: err.message });
     }
