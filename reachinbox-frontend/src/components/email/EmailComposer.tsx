@@ -418,13 +418,13 @@ export const EmailComposer: React.FC = () => {
                 {recipients.map((email) => (
                   <span
                     key={email}
-                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-800 border border-emerald-200"
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-800 border border-emerald-200 max-w-[200px] sm:max-w-xs"
                   >
-                    <span>{email}</span>
+                    <span className="truncate">{email}</span>
                     <button
                       type="button"
                       onClick={() => handleRemoveRecipient(email)}
-                      className="hover:text-rose-600 transition-colors"
+                      className="hover:text-rose-600 transition-colors shrink-0"
                       aria-label={`Remove ${email}`}
                     >
                       <X className="h-2.5 w-2.5" />
@@ -432,19 +432,13 @@ export const EmailComposer: React.FC = () => {
                   </span>
                 ))}
 
-                {uploadResult && uploadResult.detectedCount > 3 && (
-                  <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800">
-                    +{uploadResult.detectedCount - recipients.length > 0 ? uploadResult.detectedCount - recipients.length : 4}
-                  </span>
-                )}
-
                 {/* Inline type input */}
                 <input
                   type="email"
                   value={toInput}
                   onChange={(e) => setToInput(e.target.value)}
                   onKeyDown={handleAddRecipient}
-                  placeholder={recipients.length === 0 ? "recipient@example.com (press Enter)" : "Add more..."}
+                  placeholder={recipients.length === 0 ? "Add recipients... (press Enter)" : "Add more..."}
                   className="flex-1 min-w-[140px] text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none py-1 bg-transparent"
                 />
               </div>
@@ -724,16 +718,20 @@ export const EmailComposer: React.FC = () => {
               <h3 className="text-xs font-semibold text-slate-900 uppercase tracking-wider">
                 Audience & Leads
               </h3>
-              <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                {Math.max(recipients.length, uploadResult?.detectedCount || 0)} Recipients
-              </span>
+              {Math.max(recipients.length, uploadResult?.detectedCount || 0) > 0 && (
+                <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                  {Math.max(recipients.length, uploadResult?.detectedCount || 0)} Recipients
+                </span>
+              )}
             </div>
 
             <LeadUploader
               onLeadsDetected={(res) => {
                 setUploadResult(res);
-                if (res?.sampleEmails) {
-                  setRecipients(res.sampleEmails.slice(0, 4));
+                if (res?.sampleEmails && res.sampleEmails.length > 0) {
+                  setRecipients(res.sampleEmails);
+                } else if (!res) {
+                  setRecipients([]);
                 }
               }}
               error={errors.leads}
@@ -801,8 +799,10 @@ export const EmailComposer: React.FC = () => {
             <LeadUploader
               onLeadsDetected={(res) => {
                 setUploadResult(res);
-                if (res?.sampleEmails) {
-                  setRecipients(res.sampleEmails.slice(0, 4));
+                if (res?.sampleEmails && res.sampleEmails.length > 0) {
+                  setRecipients(res.sampleEmails);
+                } else if (!res) {
+                  setRecipients([]);
                 }
                 setShowUploadModal(false);
               }}
