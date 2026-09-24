@@ -1,9 +1,3 @@
-/**
- * ReachInbox Base API Client
- * Centralizes HTTP requests, headers, and error handling.
- * Consumes NEXT_PUBLIC_API_URL from environment variables.
- */
-
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api/v1';
 
 export class ApiError extends Error {
@@ -47,7 +41,6 @@ export async function apiClient<T>(
     Accept: 'application/json',
   };
 
-  // Attach auth token from localStorage if present
   if (typeof window !== 'undefined') {
     try {
       const token = localStorage.getItem('reachinbox_auth_token');
@@ -55,7 +48,7 @@ export async function apiClient<T>(
         defaultHeaders['Authorization'] = `Bearer ${token}`;
       }
     } catch {
-      // Ignore storage access error
+
     }
   }
 
@@ -68,7 +61,6 @@ export async function apiClient<T>(
     },
   };
 
-  // If sending FormData (e.g. file uploads), remove Content-Type to let browser set boundary
   if (config.body instanceof FormData) {
     const headerObj = config.headers as Record<string, string>;
     delete headerObj['Content-Type'];
@@ -87,14 +79,13 @@ export async function apiClient<T>(
       throw new ApiError(response.status, response.statusText, errorData);
     }
 
-    // Return empty object for 204 No Content
     if (response.status === 204) {
       return {} as T;
     }
 
     return (await response.json()) as T;
   } catch (error) {
-    // If running in development and backend is unreachable, throw ApiError or handle downstream
+
     if (error instanceof ApiError) {
       throw error;
     }

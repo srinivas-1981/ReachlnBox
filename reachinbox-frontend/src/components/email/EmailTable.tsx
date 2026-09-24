@@ -56,12 +56,11 @@ export const EmailTable: React.FC<EmailTableProps> = ({
                   onClick={() => router.push(`/dashboard/emails/${email.id}`)}
                   className="hover:bg-slate-50/80 transition-colors group cursor-pointer"
                 >
-                  {/* Recipient */}
+
                   <td className="py-2.5 px-4 sm:px-6 font-medium text-slate-900 group-hover:text-emerald-700 max-w-sm truncate">
                     <span title={email.recipient}>{email.recipient}</span>
                   </td>
 
-                  {/* Subject */}
                   <td className="py-2.5 px-4 sm:px-6 text-slate-600 max-w-lg truncate">
                     <span title={email.subject}>{email.subject}</span>
                     {sentEmail?.errorMessage && (
@@ -71,17 +70,14 @@ export const EmailTable: React.FC<EmailTableProps> = ({
                     )}
                   </td>
 
-                  {/* Time */}
                   <td className="py-2.5 px-4 sm:px-6 text-slate-500 whitespace-nowrap">
                     {timeString ? formatDateTime(timeString) : '—'}
                   </td>
 
-                  {/* Status Badge */}
                   <td className="py-2.5 px-4 sm:px-6 whitespace-nowrap">
                     <Badge status={email.status as EmailStatus} dot />
                   </td>
 
-                  {/* Actions */}
                   <td className="py-2.5 px-4 sm:px-6 text-right whitespace-nowrap">
                     <div className="flex items-center justify-end gap-1">
                       {isScheduled && scheduledEmail && (

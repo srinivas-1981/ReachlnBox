@@ -1,7 +1,6 @@
 import dotenv from 'dotenv';
 import path from 'path';
 
-// Ensure .env is loaded
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
 export const config = {
@@ -37,5 +36,29 @@ export const config = {
 
   worker: {
     concurrency: parseInt(process.env.WORKER_CONCURRENCY || '5', 10),
+  },
+
+  slack: {
+    clientId: process.env.SLACK_CLIENT_ID || '',
+    clientSecret: process.env.SLACK_CLIENT_SECRET || '',
+    redirectUri: process.env.SLACK_REDIRECT_URI || 'http://localhost:5000/api/v1/slack/callback',
+    scopes: process.env.SLACK_SCOPES || 'chat:write,incoming-webhook,channels:read',
+  },
+
+  auth: {
+    users: [
+      {
+        id: 'usr_mitrajit',
+        name: 'Mitrajit',
+        email: (process.env.MITRAJIT_EMAIL || 'Mitrajit').trim().toLowerCase(),
+        password: process.env.MITRAJIT_PASSWORD || 'Yadav036',
+      },
+      {
+        id: 'usr_yadav036',
+        name: 'Yadav036',
+        email: (process.env.YADAV036_EMAIL || 'Yadav036').trim().toLowerCase(),
+        password: process.env.YADAV036_PASSWORD || 'Yadav036',
+      },
+    ],
   },
 };

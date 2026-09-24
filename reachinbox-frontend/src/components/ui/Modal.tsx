@@ -71,14 +71,13 @@ export const Modal: React.FC<ModalProps> = ({
       aria-describedby={description ? 'modal-description' : undefined}
       className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4"
     >
-      {/* Subtle Backdrop */}
+
       <div
         className="fixed inset-0 bg-slate-900/30 backdrop-blur-xs transition-opacity duration-150"
         onClick={isConfirmLoading ? undefined : onClose}
         aria-hidden="true"
       />
 
-      {/* Modal Dialog Box */}
       <div
         ref={modalRef}
         className={cn(
@@ -86,7 +85,7 @@ export const Modal: React.FC<ModalProps> = ({
           maxWidths[maxWidth]
         )}
       >
-        {/* Header */}
+
         <div className="flex items-start justify-between pb-2.5 border-b border-slate-100">
           <div>
             <h3 id="modal-title" className="text-sm font-semibold text-slate-900">
@@ -109,10 +108,8 @@ export const Modal: React.FC<ModalProps> = ({
           </button>
         </div>
 
-        {/* Content */}
         {children && <div className="py-3 text-xs text-slate-600">{children}</div>}
 
-        {/* Actions Footer */}
         {(onConfirm || confirmLabel) && (
           <div className="flex items-center justify-end gap-2 pt-3 mt-1 border-t border-slate-100">
             <Button

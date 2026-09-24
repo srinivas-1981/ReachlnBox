@@ -3,19 +3,18 @@ import { config } from './env';
 
 export const pool = new Pool({
   connectionString: config.databaseUrl,
+  ssl: (process.env.NODE_ENV === 'production' || process.env.DATABASE_URL?.includes('render.com') || process.env.DATABASE_SSL === 'true')
+    ? { rejectUnauthorized: false }
+    : undefined,
 });
 
-/**
- * Initializes database tables and schemas if they don't exist.
- */
 export async function initDb(): Promise<void> {
   const client = await pool.connect();
   try {
-    console.log('📦 Connected to PostgreSQL database:', config.databaseUrl.replace(/:[^:@]+@/, ':****@'));
+    console.log(' Connected to PostgreSQL database:', config.databaseUrl.replace(/:[^:@]+@/, ':****@'));
 
     await client.query('BEGIN');
 
-    // 1. Users Table
     await client.query(`
       CREATE TABLE IF NOT EXISTS users (
         id VARCHAR(255) PRIMARY KEY,
@@ -28,7 +27,6 @@ export async function initDb(): Promise<void> {
       );
     `);
 
-    // 2. Emails Table
     await client.query(`
       CREATE TABLE IF NOT EXISTS emails (
         id VARCHAR(255) PRIMARY KEY,
@@ -52,12 +50,10 @@ export async function initDb(): Promise<void> {
       );
     `);
 
-    // Ensure provider_message_id exists on already-created tables
     await client.query(`
       ALTER TABLE emails ADD COLUMN IF NOT EXISTS provider_message_id TEXT;
     `);
 
-    // 3. Campaigns Table
     await client.query(`
       CREATE TABLE IF NOT EXISTS campaigns (
         id VARCHAR(255) PRIMARY KEY,
@@ -73,7 +69,6 @@ export async function initDb(): Promise<void> {
       );
     `);
 
-    // 4. Slack Integrations Table
     await client.query(`
       CREATE TABLE IF NOT EXISTS slack_integrations (
         id VARCHAR(255) PRIMARY KEY,
@@ -85,7 +80,6 @@ export async function initDb(): Promise<void> {
       );
     `);
 
-    // Seed default user if not exists
     const userCheck = await client.query('SELECT COUNT(*) FROM users');
     if (parseInt(userCheck.rows[0].count, 10) === 0) {
       await client.query(`
@@ -98,24 +92,23 @@ export async function initDb(): Promise<void> {
           'Growth Lead'
         );
       `);
-      console.log('🌱 Seeded default user (Oliver Brown)');
+      console.log(' Seeded default user (Oliver Brown)');
     }
 
-    // Seed Slack integration
     const slackCheck = await client.query('SELECT COUNT(*) FROM slack_integrations');
     if (parseInt(slackCheck.rows[0].count, 10) === 0) {
       await client.query(`
         INSERT INTO slack_integrations (id, user_id, connected, workspace_name, channel_name, connected_at)
         VALUES ('slk_01', 'usr_reach_01', TRUE, 'ReachInbox Growth Team', '#email-alerts', NOW() - INTERVAL '5 day');
       `);
-      console.log('🌱 Seeded Slack integration status into PostgreSQL');
+      console.log(' Seeded Slack integration status into PostgreSQL');
     }
 
     await client.query('COMMIT');
-    console.log('✅ PostgreSQL Schema and tables ready');
+    console.log(' PostgreSQL Schema and tables ready');
   } catch (error) {
     await client.query('ROLLBACK');
-    console.error('❌ PostgreSQL initialization error:', error);
+    console.error(' PostgreSQL initialization error:', error);
     throw error;
   } finally {
     client.release();

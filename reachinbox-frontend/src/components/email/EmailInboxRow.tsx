@@ -23,7 +23,6 @@ export const EmailInboxRow: React.FC<EmailInboxRowProps> = ({
   const isScheduled = 'scheduledAt' in email;
   const scheduledEmail = isScheduled ? (email as ScheduledEmail) : null;
 
-  // Format timestamp for badge e.g. "Tue 8:16:32 AM"
   const formattedTime = (dateStr?: string) => {
     if (!dateStr) return '';
     try {
@@ -48,7 +47,7 @@ export const EmailInboxRow: React.FC<EmailInboxRowProps> = ({
       href={`/dashboard/emails/${email.id}`}
       className="group flex items-center gap-3 px-4 py-3 bg-white hover:bg-slate-50/80 border-b border-slate-100 transition-colors text-xs select-none cursor-pointer"
     >
-      {/* Star Toggle */}
+
       <button
         type="button"
         onClick={(e) => {
@@ -67,14 +66,12 @@ export const EmailInboxRow: React.FC<EmailInboxRowProps> = ({
         />
       </button>
 
-      {/* Recipient */}
       <div className="w-28 sm:w-36 shrink-0 truncate">
         <span className="font-semibold text-slate-900 group-hover:text-emerald-700 transition-colors">
           To: {email.recipient.includes('@') ? email.recipient.split('@')[0] : email.recipient}
         </span>
       </div>
 
-      {/* Status Pill Badge (Matching Screenshot Style) */}
       <div className="shrink-0 flex items-center">
         {isScheduled ? (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-amber-50 text-amber-700 border border-amber-200/80 max-w-[280px] sm:max-w-none truncate">
@@ -106,14 +103,12 @@ export const EmailInboxRow: React.FC<EmailInboxRowProps> = ({
         )}
       </div>
 
-      {/* Snippet preview */}
       <div className="flex-1 min-w-0 hidden md:block">
         <span className="text-slate-500 truncate block">
           {email.snippet ? `- ${email.snippet}` : email.body ? `- ${email.body.replace(/\n+/g, ' ')}` : ''}
         </span>
       </div>
 
-      {/* Right side hover arrow */}
       <div className="shrink-0 text-slate-400 group-hover:text-slate-600 text-[11px] font-medium">
         <span>View</span>
       </div>

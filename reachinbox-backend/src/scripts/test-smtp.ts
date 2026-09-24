@@ -2,14 +2,14 @@ import { verifySmtpConnection } from '../modules/email/smtp.client';
 import { emailService } from '../modules/email/email.service';
 
 async function run() {
-  console.log('🔄 Testing Ethereal SMTP connection...');
+  console.log(' Testing Ethereal SMTP connection...');
   const isReady = await verifySmtpConnection();
   if (!isReady) {
-    console.error('❌ Could not verify SMTP connection');
+    console.error(' Could not verify SMTP connection');
     process.exit(1);
   }
 
-  console.log('📨 Sending a test email through Ethereal SMTP...');
+  console.log(' Sending a test email through Ethereal SMTP...');
   try {
     const result = await emailService.sendEmail({
       to: 'recipient.test@domain.io',
@@ -26,14 +26,14 @@ async function run() {
     });
 
     console.log('====================================================');
-    console.log('✅ Email sent successfully!');
-    console.log(`🆔 Message ID: ${result.messageId}`);
+    console.log(' Email sent successfully!');
+    console.log(` Message ID: ${result.messageId}`);
     if (result.previewUrl) {
-      console.log(`🔗 Ethereal Preview URL: ${result.previewUrl}`);
+      console.log(` Ethereal Preview URL: ${result.previewUrl}`);
     }
     console.log('====================================================');
   } catch (error: any) {
-    console.error('❌ Failed to send email:', error?.message || error);
+    console.error(' Failed to send email:', error?.message || error);
     process.exit(1);
   }
 }

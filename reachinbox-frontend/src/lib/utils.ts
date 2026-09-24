@@ -1,7 +1,3 @@
-/**
- * Utility functions for formatting, class merging, and string manipulation.
- */
-
 export function cn(...classes: (string | boolean | undefined | null | number | unknown)[]): string {
   return classes.filter(Boolean).join(' ');
 }

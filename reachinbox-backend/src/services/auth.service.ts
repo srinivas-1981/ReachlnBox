@@ -12,9 +12,7 @@ export interface UserPayload {
 }
 
 export class AuthService {
-  /**
-   * Generates the Google OAuth authorization URL.
-   */
+
   getGoogleAuthUrl(state?: string): string {
     return oauth2Client.generateAuthUrl({
       access_type: 'offline',
@@ -24,9 +22,6 @@ export class AuthService {
     });
   }
 
-  /**
-   * Exchanges authorization code for Google tokens and extracts user profile.
-   */
   async exchangeGoogleCode(code: string): Promise<{ user: UserPayload; tokens: any }> {
     const { tokens } = await oauth2Client.getToken(code);
     oauth2Client.setCredentials(tokens);
@@ -50,18 +45,12 @@ export class AuthService {
     return { user, tokens };
   }
 
-  /**
-   * Signs a JWT session token for the user.
-   */
   signToken(user: UserPayload): string {
     return jwt.sign(user, config.jwt.secret, {
       expiresIn: config.jwt.expiresIn as any,
     });
   }
 
-  /**
-   * Verifies and decodes a JWT token.
-   */
   verifyToken(token: string): UserPayload | null {
     try {
       return jwt.verify(token, config.jwt.secret) as UserPayload;

@@ -29,10 +29,9 @@ export const authenticate = (
     }
   }
 
-  // If unauthenticated, return 401
   res.status(401).json({
     success: false,
-    message: 'Authentication required. Please log in with Google.',
+    message: 'Authentication required. Please log in.',
   });
 };
 

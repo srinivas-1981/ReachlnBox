@@ -74,7 +74,7 @@ export default function SentEmailsPage() {
 
   return (
     <PageContainer>
-      {/* Restrained Page Header */}
+
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-3 border-b border-slate-200">
         <div>
           <h1 className="text-lg font-semibold text-slate-900 tracking-tight">
@@ -90,7 +90,6 @@ export default function SentEmailsPage() {
         </div>
       </div>
 
-      {/* Toolbar: Search and Status Filters */}
       <div className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <EmailSearch
           onSearch={handleSearch}
@@ -98,7 +97,6 @@ export default function SentEmailsPage() {
           placeholder="Filter by recipient or subject..."
         />
 
-        {/* Status Filter Tabs */}
         <div className="flex items-center gap-1">
           {['all', 'sent', 'failed'].map((st) => (
             <button
@@ -117,7 +115,6 @@ export default function SentEmailsPage() {
         </div>
       </div>
 
-      {/* States */}
       {hasError ? (
         <ErrorState
           title="Something went wrong"

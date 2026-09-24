@@ -1,7 +1,10 @@
 import { Router } from 'express';
 import { emailController } from '../controllers/email.controller';
+import { authenticate } from '../middlewares/auth.middleware';
 
 const router = Router();
+
+router.use(authenticate);
 
 router.get('/metrics', (req, res) => emailController.getMetrics(req, res));
 router.get('/scheduled', (req, res) => emailController.getScheduled(req, res));

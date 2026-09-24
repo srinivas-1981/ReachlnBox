@@ -7,11 +7,7 @@ export interface EmailJobData {
 
 export const EMAIL_QUEUE_NAME = 'email-dispatch-queue';
 
-/**
- * BullMQ Queue for scheduled email dispatch.
- * Backed by Redis connection options.
- */
-export const emailQueue = new Queue<EmailJobData, any, string>(EMAIL_QUEUE_NAME, {
+export const emailQueue = new Queue<EmailJobData>(EMAIL_QUEUE_NAME, {
   connection: redisConnectionOptions,
   defaultJobOptions: {
     attempts: 3,
@@ -24,9 +20,6 @@ export const emailQueue = new Queue<EmailJobData, any, string>(EMAIL_QUEUE_NAME,
   },
 });
 
-/**
- * Calculates milliseconds delay from current time until scheduledAt.
- */
 export function calculateDelay(scheduledAt?: string | Date | null): number {
   if (!scheduledAt) return 0;
   const targetTime = new Date(scheduledAt).getTime();
@@ -34,9 +27,6 @@ export function calculateDelay(scheduledAt?: string | Date | null): number {
   return Math.max(0, targetTime - now);
 }
 
-/**
- * Enqueues a delayed job for a scheduled email.
- */
 export async function addEmailJob(
   scheduledEmailId: string,
   scheduledAt?: string | Date | null,

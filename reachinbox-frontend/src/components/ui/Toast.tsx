@@ -92,7 +92,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   return (
     <ToastContext.Provider value={{ showToast, success, error, warning, info }}>
       {children}
-      {/* Toast viewport container */}
+
       <div
         aria-live="assertive"
         className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none p-2 sm:p-0"

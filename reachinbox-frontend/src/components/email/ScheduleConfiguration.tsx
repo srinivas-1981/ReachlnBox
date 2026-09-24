@@ -38,7 +38,6 @@ export const ScheduleConfiguration: React.FC<ScheduleConfigurationProps> = ({
         </p>
       </div>
 
-      {/* Start Time Field */}
       <div>
         <Input
           label="Start Time"
@@ -52,14 +51,13 @@ export const ScheduleConfiguration: React.FC<ScheduleConfigurationProps> = ({
         />
       </div>
 
-      {/* Advanced Sending Settings */}
       <div className="pt-2 border-t border-slate-100">
         <p className="text-[11px] font-semibold text-slate-700 uppercase tracking-wider mb-2.5">
           Advanced Sending Settings
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {/* Delay Between Emails */}
+
           <div>
             <Input
               label="Delay (Seconds)"
@@ -75,7 +73,6 @@ export const ScheduleConfiguration: React.FC<ScheduleConfigurationProps> = ({
             />
           </div>
 
-          {/* Hourly Email Limit */}
           <div>
             <Input
               label="Hourly Limit"

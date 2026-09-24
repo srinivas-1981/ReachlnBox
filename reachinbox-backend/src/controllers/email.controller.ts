@@ -1,10 +1,12 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { storeService } from '../services/store.service';
+import { AuthenticatedRequest } from '../middlewares/auth.middleware';
 
 export class EmailController {
-  async getMetrics(_req: Request, res: Response): Promise<void> {
+  async getMetrics(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      const data = await storeService.getMetrics();
+      const userId = req.user?.id;
+      const data = await storeService.getMetrics(userId);
       res.json({
         success: true,
         data,
@@ -14,23 +16,11 @@ export class EmailController {
     }
   }
 
-  async getScheduled(req: Request, res: Response): Promise<void> {
-    try {
-      const search = typeof req.query.search === 'string' ? req.query.search : undefined;
-      const data = await storeService.getScheduled(search);
-      res.json({
-        success: true,
-        data,
-      });
-    } catch (err: any) {
-      res.status(500).json({ success: false, message: err.message });
-    }
-  }
-
-  async getSent(req: Request, res: Response): Promise<void> {
+  async getScheduled(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
       const search = typeof req.query.search === 'string' ? req.query.search : undefined;
-      const data = await storeService.getSent(search);
+      const userId = req.user?.id;
+      const data = await storeService.getScheduled(search, userId);
       res.json({
         success: true,
         data,
@@ -40,10 +30,25 @@ export class EmailController {
     }
   }
 
-  async getById(req: Request, res: Response): Promise<void> {
+  async getSent(req: AuthenticatedRequest, res: Response): Promise<void> {
+    try {
+      const search = typeof req.query.search === 'string' ? req.query.search : undefined;
+      const userId = req.user?.id;
+      const data = await storeService.getSent(search, userId);
+      res.json({
+        success: true,
+        data,
+      });
+    } catch (err: any) {
+      res.status(500).json({ success: false, message: err.message });
+    }
+  }
+
+  async getById(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
       const id = req.params.id as string;
-      const email = await storeService.getEmailById(id);
+      const userId = req.user?.id;
+      const email = await storeService.getEmailById(id, userId);
       if (!email) {
         res.status(404).json({
           success: false,
@@ -60,10 +65,11 @@ export class EmailController {
     }
   }
 
-  async pauseScheduled(req: Request, res: Response): Promise<void> {
+  async pauseScheduled(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
       const id = req.params.id as string;
-      const success = await storeService.pauseScheduled(id);
+      const userId = req.user?.id;
+      const success = await storeService.pauseScheduled(id, userId);
       if (!success) {
         res.status(404).json({ success: false, message: 'Scheduled email not found' });
         return;
@@ -74,10 +80,11 @@ export class EmailController {
     }
   }
 
-  async resumeScheduled(req: Request, res: Response): Promise<void> {
+  async resumeScheduled(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
       const id = req.params.id as string;
-      const success = await storeService.resumeScheduled(id);
+      const userId = req.user?.id;
+      const success = await storeService.resumeScheduled(id, userId);
       if (!success) {
         res.status(404).json({ success: false, message: 'Scheduled email not found' });
         return;
@@ -88,10 +95,11 @@ export class EmailController {
     }
   }
 
-  async deleteScheduled(req: Request, res: Response): Promise<void> {
+  async deleteScheduled(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
       const id = req.params.id as string;
-      const success = await storeService.deleteScheduled(id);
+      const userId = req.user?.id;
+      const success = await storeService.deleteScheduled(id, userId);
       if (!success) {
         res.status(404).json({ success: false, message: 'Scheduled email not found' });
         return;
@@ -102,10 +110,11 @@ export class EmailController {
     }
   }
 
-  async retryFailed(req: Request, res: Response): Promise<void> {
+  async retryFailed(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
       const id = req.params.id as string;
-      const success = await storeService.retryFailed(id);
+      const userId = req.user?.id;
+      const success = await storeService.retryFailed(id, userId);
       if (!success) {
         res.status(404).json({ success: false, message: 'Failed email not found' });
         return;
@@ -116,10 +125,11 @@ export class EmailController {
     }
   }
 
-  async toggleStar(req: Request, res: Response): Promise<void> {
+  async toggleStar(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
       const id = req.params.id as string;
-      const success = await storeService.toggleStar(id);
+      const userId = req.user?.id;
+      const success = await storeService.toggleStar(id, userId);
       if (!success) {
         res.status(404).json({ success: false, message: 'Email not found' });
         return;

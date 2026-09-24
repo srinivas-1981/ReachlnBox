@@ -100,7 +100,6 @@ export const LeadUploader: React.FC<LeadUploaderProps> = ({ onLeadsDetected, err
         <span className="text-[11px] text-slate-400">CSV, TXT</span>
       </div>
 
-      {/* Hidden file input */}
       <input
         ref={fileInputRef}
         type="file"
@@ -147,7 +146,6 @@ export const LeadUploader: React.FC<LeadUploaderProps> = ({ onLeadsDetected, err
         </div>
       )}
 
-      {/* Parsing Loader State */}
       {isParsing && (
         <div className="flex flex-col items-center justify-center p-6 bg-slate-50 border border-slate-200 rounded-md text-center">
           <Loader2 className="h-5 w-5 text-slate-600 animate-spin mb-1.5" />
@@ -155,7 +153,6 @@ export const LeadUploader: React.FC<LeadUploaderProps> = ({ onLeadsDetected, err
         </div>
       )}
 
-      {/* Uploaded File Summary State */}
       {uploadResult && (
         <div className="p-3 bg-white border border-slate-200 rounded-md">
           <div className="flex items-center justify-between gap-3">
@@ -188,7 +185,6 @@ export const LeadUploader: React.FC<LeadUploaderProps> = ({ onLeadsDetected, err
         </div>
       )}
 
-      {/* Error message */}
       {(error || uploadError) && (
         <p className="mt-1 text-xs text-rose-600 flex items-center gap-1">
           <AlertCircle className="h-3.5 w-3.5 shrink-0" />
@@ -196,7 +192,6 @@ export const LeadUploader: React.FC<LeadUploaderProps> = ({ onLeadsDetected, err
         </p>
       )}
 
-      {/* Remove Confirmation Modal */}
       <Modal
         isOpen={showRemoveModal}
         onClose={() => setShowRemoveModal(false)}

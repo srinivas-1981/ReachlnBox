@@ -6,7 +6,6 @@ import v1Routes from './routes';
 
 export const app = express();
 
-// Enable CORS for frontend application
 app.use(
   cors({
     origin: [config.frontendUrl, 'http://localhost:3000'],
@@ -16,12 +15,10 @@ app.use(
   })
 );
 
-// Body and cookie parsers
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Request logging in development
 if (config.nodeEnv === 'development') {
   app.use((req: Request, _res: Response, next: NextFunction) => {
     console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
@@ -29,10 +26,8 @@ if (config.nodeEnv === 'development') {
   });
 }
 
-// Mount versioned API routes
 app.use('/api/v1', v1Routes);
 
-// Root greeting / check
 app.get('/', (_req: Request, res: Response) => {
   res.json({
     name: 'ReachInbox Backend API',
@@ -45,7 +40,6 @@ app.get('/', (_req: Request, res: Response) => {
   });
 });
 
-// 404 Handler
 app.use((_req: Request, res: Response) => {
   res.status(404).json({
     success: false,
@@ -53,7 +47,6 @@ app.use((_req: Request, res: Response) => {
   });
 });
 
-// Global Error Handler
 app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
   console.error('Unhandled server error:', err);
   res.status(err.status || 500).json({

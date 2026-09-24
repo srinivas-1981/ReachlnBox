@@ -83,7 +83,7 @@ export default function SettingsPage() {
 
   return (
     <PageContainer maxWidth="wide">
-      {/* Restrained Header */}
+
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-3 border-b border-slate-200 mb-4 max-w-5xl">
         <div>
           <h1 className="text-lg font-semibold text-slate-900 tracking-tight">
@@ -96,7 +96,7 @@ export default function SettingsPage() {
       </div>
 
       <div className="space-y-6 max-w-5xl">
-        {/* Profile Card */}
+
         <form onSubmit={handleSaveProfile} className="bg-white rounded-lg border border-slate-200 p-5 sm:p-6 space-y-4 shadow-2xs">
           <div className="flex items-center justify-between">
             <h2 className="text-xs font-semibold text-slate-900 uppercase tracking-wider">
@@ -162,7 +162,6 @@ export default function SettingsPage() {
           </div>
         </form>
 
-        {/* Scheduling Defaults Form */}
         <form onSubmit={handleSaveDefaults} className="bg-white rounded-lg border border-slate-200 p-5 sm:p-6 space-y-4 shadow-2xs">
           <h2 className="text-xs font-semibold text-slate-900 uppercase tracking-wider">
             Default Campaign Limits
@@ -206,7 +205,6 @@ export default function SettingsPage() {
           </div>
         </form>
 
-        {/* Slack Connection Summary */}
         <div className="bg-white rounded-lg border border-slate-200 p-5 sm:p-6 shadow-2xs">
           <div className="flex items-center justify-between">
             <div>

@@ -43,7 +43,6 @@ export const EmailDetailView: React.FC<EmailDetailViewProps> = ({ email }) => {
     toast.success(isStarred ? 'Unstarred email' : 'Starred email');
   };
 
-  // Date formatted like "Mar 3, 10:23 AM"
   const formattedDate = () => {
     const rawDate = 'scheduledAt' in email ? email.scheduledAt : (email as SentEmail).sentAt;
     if (!rawDate) return '';
@@ -65,7 +64,7 @@ export const EmailDetailView: React.FC<EmailDetailViewProps> = ({ email }) => {
 
   return (
     <div className="bg-white rounded-lg border border-slate-200/90 overflow-hidden shadow-2xs">
-      {/* Top Header Controls */}
+
       <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-slate-100 bg-white">
         <div className="flex items-center gap-3 min-w-0">
           <Link
@@ -82,7 +81,6 @@ export const EmailDetailView: React.FC<EmailDetailViewProps> = ({ email }) => {
           </h1>
         </div>
 
-        {/* Action Controls on Right */}
         <div className="flex items-center gap-1 sm:gap-2 shrink-0">
           <button
             type="button"
@@ -116,11 +114,10 @@ export const EmailDetailView: React.FC<EmailDetailViewProps> = ({ email }) => {
         </div>
       </div>
 
-      {/* Email Sender Metadata Row */}
       <div className="px-5 sm:px-8 py-5 border-b border-slate-100">
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-start gap-3.5 min-w-0">
-            {/* Circular Initial Avatar */}
+
             <div className="h-9 w-9 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-2xs">
               {senderName.charAt(0).toUpperCase()}
             </div>
@@ -135,7 +132,6 @@ export const EmailDetailView: React.FC<EmailDetailViewProps> = ({ email }) => {
                 </span>
               </div>
 
-              {/* Recipient Dropdown */}
               <div className="relative mt-0.5">
                 <button
                   type="button"
@@ -159,20 +155,17 @@ export const EmailDetailView: React.FC<EmailDetailViewProps> = ({ email }) => {
             </div>
           </div>
 
-          {/* Date & Time */}
           <div className="shrink-0 text-xs text-slate-400 font-medium">
             {formattedDate()}
           </div>
         </div>
       </div>
 
-      {/* Dynamic Email Body Content */}
       <div className="px-5 sm:px-8 py-6 space-y-4 text-xs sm:text-sm text-slate-800 leading-relaxed max-w-4xl">
         <div className="whitespace-pre-wrap leading-relaxed break-words font-sans">
           {email.body || '(No Content)'}
         </div>
 
-        {/* Dynamic Attachments - Only rendered if actual attachments exist */}
         {attachments.length > 0 && (
           <div className="pt-6 border-t border-slate-100">
             <p className="text-xs font-semibold text-slate-700 uppercase tracking-wider mb-3 flex items-center gap-1.5">
@@ -216,7 +209,6 @@ export const EmailDetailView: React.FC<EmailDetailViewProps> = ({ email }) => {
           </div>
         )}
 
-        {/* Quick Action Buttons at Bottom */}
         <div className="pt-6 flex items-center gap-2 border-t border-slate-100">
           <Link href="/dashboard/compose">
             <Button

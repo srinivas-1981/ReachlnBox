@@ -59,16 +59,15 @@ export const MobileNav: React.FC<MobileNavProps> = ({ isOpen, onClose, user, met
 
   return (
     <div className="fixed inset-0 z-50 md:hidden flex" role="dialog" aria-modal="true">
-      {/* Subtle Backdrop */}
+
       <div
         className="fixed inset-0 bg-slate-900/30 backdrop-blur-xs transition-opacity duration-200"
         onClick={onClose}
         aria-hidden="true"
       />
 
-      {/* Slide-in Drawer from Left */}
       <div className="relative flex-1 flex flex-col max-w-xs w-full bg-white shadow-xl z-10 animate-in slide-in-from-left duration-200">
-        {/* Header */}
+
         <div className="p-4 border-b border-slate-100 space-y-3">
           <div className="flex items-center justify-between">
             <Link href="/dashboard" onClick={onClose} className="flex items-center gap-2.5">
@@ -89,7 +88,6 @@ export const MobileNav: React.FC<MobileNavProps> = ({ isOpen, onClose, user, met
             </button>
           </div>
 
-          {/* User Card */}
           <div className="flex items-center gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-100">
             <div className="relative h-8 w-8 rounded-full overflow-hidden bg-slate-200 shrink-0 border border-slate-300">
               {user.avatarUrl ? (
@@ -116,7 +114,6 @@ export const MobileNav: React.FC<MobileNavProps> = ({ isOpen, onClose, user, met
             </div>
           </div>
 
-          {/* Compose Button */}
           <Link
             href="/dashboard/compose"
             onClick={onClose}
@@ -127,7 +124,6 @@ export const MobileNav: React.FC<MobileNavProps> = ({ isOpen, onClose, user, met
           </Link>
         </div>
 
-        {/* Links List */}
         <div className="flex-1 overflow-y-auto px-3 py-3 space-y-5">
           <div>
             <p className="px-2 text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
@@ -207,7 +203,6 @@ export const MobileNav: React.FC<MobileNavProps> = ({ isOpen, onClose, user, met
           </div>
         </div>
 
-        {/* User Footer */}
         <div className="p-3 border-t border-slate-100 bg-slate-50/50">
           <UserMenu user={user} onNavigate={onClose} />
         </div>

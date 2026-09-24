@@ -11,7 +11,6 @@ router.use('/emails', emailRoutes);
 router.use('/campaigns', campaignRoutes);
 router.use('/slack', slackRoutes);
 
-// Health check endpoint
 router.get('/health', (_req, res) => {
   res.json({
     status: 'ok',

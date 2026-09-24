@@ -62,18 +62,16 @@ export default function DashboardPage() {
     await emailService.toggleStarEmail(id);
   };
 
-  // Combine and sort emails
   const allEmails = [
     ...scheduledEmails.map((e) => ({ ...e, type: 'scheduled' as const })),
     ...sentEmails.map((e) => ({ ...e, type: 'sent' as const })),
   ];
 
   const filteredEmails = allEmails.filter((email) => {
-    // Filter by tab
+
     if (activeTab === 'scheduled' && email.type !== 'scheduled') return false;
     if (activeTab === 'sent' && email.type !== 'sent') return false;
 
-    // Filter by search query
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       const matchRecipient = email.recipient.toLowerCase().includes(q);
@@ -87,10 +85,10 @@ export default function DashboardPage() {
 
   return (
     <PageContainer maxWidth="wide">
-      {/* Top Search & Filter Bar (Matching Screenshot Panels 2 & 3) */}
+
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 mb-3 border-b border-slate-200/80">
         <div className="flex items-center gap-2 flex-1 max-w-lg">
-          {/* Compact Rounded Search Input */}
+
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
             <input
@@ -106,12 +104,11 @@ export default function DashboardPage() {
                 onClick={() => setSearchQuery('')}
                 className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs"
               >
-                ✕
+
               </button>
             )}
           </div>
 
-          {/* Filter / Sliders Button */}
           <button
             type="button"
             className="p-1.5 rounded-full border border-slate-200 bg-white text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-colors"
@@ -122,7 +119,6 @@ export default function DashboardPage() {
           </button>
         </div>
 
-        {/* View Tabs & Compose Action */}
         <div className="flex items-center gap-2 justify-between sm:justify-end">
           <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200/80">
             <button
@@ -188,7 +184,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Main Email Inbox Rows Container (Matching Screenshot Panels 2 & 3) */}
       {hasError ? (
         <div className="py-8">
           <ErrorState

@@ -5,9 +5,6 @@ import { config } from '../config/env';
 import { AuthenticatedRequest } from '../middlewares/auth.middleware';
 
 export class AuthController {
-  /**
-   * Initiates Google OAuth flow by redirecting to Google's consent screen.
-   */
   initiateGoogleAuth(req: Request, res: Response): void {
     const state = typeof req.query.state === 'string' ? req.query.state : undefined;
     const authUrl = authService.getGoogleAuthUrl(state);
@@ -23,10 +20,6 @@ export class AuthController {
     res.redirect(authUrl);
   }
 
-  /**
-   * Handles Google OAuth callback after user approves permissions.
-   * Matches configured redirect_uri: http://localhost:5000/api/v1/auth/google/callback
-   */
   async handleGoogleCallback(req: Request, res: Response): Promise<void> {
     const code = req.query.code as string | undefined;
     const error = req.query.error as string | undefined;
@@ -40,20 +33,17 @@ export class AuthController {
     try {
       const { user } = await authService.exchangeGoogleCode(code);
 
-      // Persist user in PostgreSQL
       await storeService.upsertUser(user);
 
       const token = authService.signToken(user);
 
-      // Set cookie for browser session
       res.cookie('token', token, {
         httpOnly: false,
-        secure: false, // localhost dev
+        secure: false,
         sameSite: 'lax',
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
-      // Redirect to frontend dashboard with token in query param
       res.redirect(`${config.frontendUrl}/dashboard?token=${encodeURIComponent(token)}`);
     } catch (err) {
       console.error('Failed to exchange Google OAuth code:', err);
@@ -61,9 +51,83 @@ export class AuthController {
     }
   }
 
-  /**
-   * Returns current authenticated user profile.
-   */
+  async login(req: Request, res: Response): Promise<void> {
+    const { email, username, password } = req.body || {};
+    const rawIdentifier = ((email || username) as string | undefined)?.trim();
+
+    if (!rawIdentifier || !password || typeof password !== 'string') {
+      res.status(400).json({
+        success: false,
+        message: 'Email and password are required',
+      });
+      return;
+    }
+
+    const identifier = rawIdentifier.toLowerCase();
+
+    const matchedUser = config.auth.users.find((u) => {
+      const uName = u.name.toLowerCase();
+      const uEmail = u.email.toLowerCase();
+      return (
+        uEmail === identifier ||
+        uName === identifier ||
+        `${uName}@reachinbox.ai` === identifier ||
+        `${uName}@reachinbox.local` === identifier
+      );
+    });
+
+    if (!matchedUser || password !== matchedUser.password) {
+      res.status(401).json({
+        success: false,
+        message: 'Invalid email or password',
+      });
+      return;
+    }
+
+    try {
+      const userEmail = matchedUser.email.includes('@')
+        ? matchedUser.email
+        : `${matchedUser.name.toLowerCase()}@reachinbox.ai`;
+
+      const user: UserPayload = {
+        id: matchedUser.id,
+        name: matchedUser.name,
+        email: userEmail,
+        avatarUrl: '',
+        role: 'Growth Lead',
+      };
+
+      await storeService.upsertUser(user);
+
+      const existingUser = await storeService.getUser(matchedUser.id);
+      const finalUser = existingUser || user;
+
+      const token = authService.signToken(finalUser);
+
+      res.cookie('token', token, {
+        httpOnly: false,
+        secure: false,
+        sameSite: 'lax',
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
+
+      res.json({
+        success: true,
+        message: 'Login successful',
+        data: {
+          user: finalUser,
+          token,
+        },
+      });
+    } catch (err: any) {
+      console.error('Error during login:', err);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to complete login',
+      });
+    }
+  }
+
   async getMe(req: AuthenticatedRequest, res: Response): Promise<void> {
     if (req.user) {
       try {
@@ -79,31 +143,12 @@ export class AuthController {
       return;
     }
 
-    // Default development profile - fetch from PostgreSQL
-    try {
-      const dbUser = await storeService.getUser('usr_reach_01');
-      if (dbUser) {
-        res.json(dbUser);
-        return;
-      }
-    } catch (err) {
-      console.warn('Could not query default user from database:', err);
-    }
-
-    const defaultUser: UserPayload = {
-      id: 'usr_reach_01',
-      name: 'Oliver Brown',
-      email: 'oliver.brown@domain.io',
-      avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-      role: 'Growth Lead',
-    };
-
-    res.json(defaultUser);
+    res.status(401).json({
+      success: false,
+      message: 'Unauthorized. Please log in.',
+    });
   }
 
-  /**
-   * Updates user profile (name, role) in PostgreSQL.
-   */
   async updateMe(req: AuthenticatedRequest, res: Response): Promise<void> {
     const userId = req.user?.id || 'usr_reach_01';
     const { name, role } = req.body;
@@ -122,9 +167,6 @@ export class AuthController {
     }
   }
 
-  /**
-   * Logs user out and invalidates session cookie.
-   */
   logout(_req: Request, res: Response): void {
     res.clearCookie('token');
     res.clearCookie('auth_token');

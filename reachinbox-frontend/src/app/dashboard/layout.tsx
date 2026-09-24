@@ -28,10 +28,8 @@ export default function DashboardLayout({
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
   const [metrics, setMetrics] = useState({ scheduledEmailsCount: 0, sentEmailsCount: 0 });
 
-  // Sidebar must always start collapsed on initial mount / refresh
-  // Route change automatically collapses the sidebar
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+
     setIsSidebarCollapsed(true);
   }, [pathname]);
 
@@ -60,7 +58,6 @@ export default function DashboardLayout({
   useEffect(() => {
     let ignore = false;
 
-    // Check if token was provided in redirect URL after Google OAuth callback
     if (typeof window !== 'undefined') {
       const searchParams = new URLSearchParams(window.location.search);
       const token = searchParams.get('token');
@@ -68,9 +65,9 @@ export default function DashboardLayout({
         try {
           localStorage.setItem('reachinbox_auth_token', token);
         } catch {
-          // Ignore storage error
+
         }
-        // Clean URL to remove token query parameter
+
         window.history.replaceState({}, document.title, window.location.pathname);
       }
     }
@@ -88,7 +85,7 @@ export default function DashboardLayout({
 
   return (
     <div className="flex h-screen overflow-hidden bg-slate-50 text-slate-900">
-      {/* Desktop Collapsible Sidebar */}
+
       <Sidebar
         user={user}
         isCollapsed={isSidebarCollapsed}
@@ -96,7 +93,6 @@ export default function DashboardLayout({
         metrics={metrics}
       />
 
-      {/* Mobile Slide-in Drawer */}
       <MobileNav
         isOpen={isMobileNavOpen}
         onClose={() => setIsMobileNavOpen(false)}
@@ -104,7 +100,6 @@ export default function DashboardLayout({
         metrics={metrics}
       />
 
-      {/* Main Content Area */}
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
         <Header
           user={user}

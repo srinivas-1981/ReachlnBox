@@ -44,7 +44,7 @@ export const UserMenu: React.FC<UserMenuProps> = ({
 
   return (
     <div className="relative" ref={menuRef}>
-      {/* Trigger Button */}
+
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
@@ -89,7 +89,6 @@ export const UserMenu: React.FC<UserMenuProps> = ({
         )}
       </button>
 
-      {/* Dropdown Menu - Positioned to the right of sidebar to prevent clipping */}
       {isOpen && (
         <div
           className={cn(
@@ -139,7 +138,6 @@ export const UserMenu: React.FC<UserMenuProps> = ({
         </div>
       )}
 
-      {/* Logout Confirmation Modal */}
       <Modal
         isOpen={showLogoutModal}
         onClose={() => setShowLogoutModal(false)}

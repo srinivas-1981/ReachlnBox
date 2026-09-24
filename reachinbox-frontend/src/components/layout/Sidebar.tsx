@@ -57,7 +57,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         isCollapsed ? 'w-16' : 'w-56'
       )}
     >
-      {/* Brand & Compose / Hamburger Header */}
+
       <div className="p-3 border-b border-slate-100 space-y-3">
         <div className={cn('flex items-center', isCollapsed ? 'justify-center' : 'justify-between')}>
           <Link
@@ -95,8 +95,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
           )}
         </div>
 
-        {/* In collapsed mode: Hamburger menu button ☰ expands sidebar */}
-        {/* In expanded mode: Compose button navigates and auto-collapses */}
         {isCollapsed ? (
           <div className="relative group/tooltip">
             <button
@@ -126,9 +124,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
         )}
       </div>
 
-      {/* Navigation Sections */}
       <div className="flex-1 overflow-y-auto px-2.5 py-3 space-y-5">
-        {/* Core Items */}
+
         <div>
           {!isCollapsed && (
             <p className="px-2 text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
@@ -190,7 +187,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </nav>
         </div>
 
-        {/* Configuration Items */}
         <div>
           {!isCollapsed && (
             <p className="px-2 text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
@@ -236,7 +232,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
       </div>
 
-      {/* Collapse/Expand Toggle & User Profile Footer */}
       <div className="p-2 border-t border-slate-100 space-y-1 bg-white">
         <div className="relative group/tooltip">
           <button

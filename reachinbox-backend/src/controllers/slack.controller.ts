@@ -1,10 +1,12 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { storeService } from '../services/store.service';
+import { AuthenticatedRequest } from '../middlewares/auth.middleware';
 
 export class SlackController {
-  async getStatus(_req: Request, res: Response): Promise<void> {
+  async getStatus(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      const data = await storeService.getSlackStatus();
+      const userId = req.user?.id || 'usr_mitrajit';
+      const data = await storeService.getSlackStatus(userId);
       res.json({
         success: true,
         data,
@@ -14,9 +16,10 @@ export class SlackController {
     }
   }
 
-  async connect(_req: Request, res: Response): Promise<void> {
+  async connect(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      await storeService.setSlackStatus(true);
+      const userId = req.user?.id || 'usr_mitrajit';
+      await storeService.setSlackStatus(true, userId);
       res.json({
         success: true,
         message: 'Slack workspace connected successfully',
@@ -26,9 +29,10 @@ export class SlackController {
     }
   }
 
-  async disconnect(_req: Request, res: Response): Promise<void> {
+  async disconnect(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      await storeService.setSlackStatus(false);
+      const userId = req.user?.id || 'usr_mitrajit';
+      await storeService.setSlackStatus(false, userId);
       res.json({
         success: true,
         message: 'Slack workspace disconnected',

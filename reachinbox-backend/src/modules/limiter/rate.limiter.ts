@@ -38,12 +38,8 @@ const RATE_LIMIT_LUA_SCRIPT = `
 `;
 
 export class RateLimiter {
-  private readonly windowMs = 60 * 60 * 1000; // 1 hour rolling window in milliseconds
+  private readonly windowMs = 60 * 60 * 1000;
 
-  /**
-   * Checks rolling 1-hour rate limit atomically for a specific user.
-   * Key pattern: ratelimit:user:{userId}:hourly
-   */
   async checkRateLimit(
     userId: string,
     hourlyLimit: number,
@@ -73,15 +69,12 @@ export class RateLimiter {
         retryAfterMs: allowed ? undefined : retryAfterMs,
       };
     } catch (error: any) {
-      console.error('❌ Redis Rate Limiter error, failing closed to protect inbox:', error?.message || error);
-      // In case of Redis script error, allow with warning or retry
+      console.error(' Redis Rate Limiter error, failing closed to protect inbox:', error?.message || error);
+
       return { allowed: false, currentCount: 0, retryAfterMs: 5000 };
     }
   }
 
-  /**
-   * Resets rate limit for a user (useful for testing or manual administrative override).
-   */
   async resetUserLimit(userId: string): Promise<void> {
     const key = `ratelimit:user:${userId}:hourly`;
     await redisClient.del(key);

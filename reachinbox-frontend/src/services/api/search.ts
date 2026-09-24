@@ -1,9 +1,3 @@
-/**
- * ReachInbox Email Search Service
- * Delegates full-text queries to backend (Elasticsearch).
- * Searches across recipient email address and subject lines.
- */
-
 import { ScheduledEmail, SentEmail, ApiResponse } from '@/types';
 import { apiClient } from './client';
 
@@ -14,9 +8,7 @@ export interface SearchResults {
 }
 
 export const emailSearchService = {
-  /**
-   * Dispatches search query to backend search endpoint.
-   */
+
   async searchEmails(query: string): Promise<SearchResults> {
     if (!query.trim()) {
       return {

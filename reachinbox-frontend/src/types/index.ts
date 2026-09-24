@@ -1,8 +1,3 @@
-/**
- * ReachInbox TypeScript Data Models & Types
- * Production-ready definitions matching backend data contracts.
- */
-
 export interface User {
   id: string;
   name: string;
@@ -27,7 +22,7 @@ export interface ScheduledEmail {
   id: string;
   recipient: string;
   subject: string;
-  scheduledAt: string; // ISO 8601 string
+  scheduledAt: string;
   status: EmailStatus;
   body?: string;
   snippet?: string;
@@ -44,7 +39,7 @@ export interface SentEmail {
   id: string;
   recipient: string;
   subject: string;
-  sentAt: string; // ISO 8601 string
+  sentAt: string;
   status: 'sent' | 'failed';
   body?: string;
   snippet?: string;
@@ -65,15 +60,15 @@ export interface EmailLead {
 
 export interface LeadsUploadResult {
   fileName: string;
-  fileSize: number; // in bytes
+  fileSize: number;
   detectedCount: number;
   sampleEmails: string[];
 }
 
 export interface ScheduleConfiguration {
-  startTime: string; // ISO 8601 string or formatted datetime-local
-  delaySeconds: number; // Delay between individual email sends
-  hourlyLimit: number; // Maximum emails per hour
+  startTime: string;
+  delaySeconds: number;
+  hourlyLimit: number;
 }
 
 export interface EmailCampaignPayload {

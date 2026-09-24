@@ -1,34 +1,22 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { storeService } from '../services/store.service';
+import { AuthenticatedRequest } from '../middlewares/auth.middleware';
 
 export class CampaignController {
-  /**
-   * Parses uploaded CSV or TXT lead lists and extracts emails.
-   */
-  parseLeads(req: Request, res: Response): void {
-    // If request contains text or mock body:
-    const sampleEmails = [
-      'sarah.connor@acme-corp.com',
-      'michael.chen@techvanguard.io',
-      'elena.rostova@cloudscale.net',
-      'david.kim@nexusanalytics.com',
-    ];
-
+  parseLeads(req: AuthenticatedRequest, res: Response): void {
+    const sampleEmails: string[] = [];
     res.json({
       success: true,
       data: {
         fileName: 'lead_list.csv',
-        fileSize: 14200,
-        detectedCount: 127,
+        fileSize: 0,
+        detectedCount: 0,
         sampleEmails,
       },
     });
   }
 
-  /**
-   * Schedules a new email campaign.
-   */
-  async scheduleCampaign(req: Request, res: Response): Promise<void> {
+  async scheduleCampaign(req: AuthenticatedRequest, res: Response): Promise<void> {
     const {
       subject,
       body,
@@ -48,20 +36,30 @@ export class CampaignController {
       return;
     }
 
-    try {
-      const effectiveRecipients = Array.isArray(recipients) && recipients.length > 0
-        ? recipients
-        : ['sarah.connor@acme-corp.com'];
-      const result = await storeService.addCampaign({
-        subject,
-        body,
-        recipients: effectiveRecipients,
-        status: status === 'sent' ? 'sent' : 'scheduled',
-        startTime,
-        delaySeconds: Number(delaySeconds) || 5,
-        hourlyLimit: Number(hourlyLimit) || 50,
-        attachments,
+    if (!Array.isArray(recipients) || recipients.length === 0) {
+      res.status(400).json({
+        success: false,
+        message: 'At least one recipient is required',
       });
+      return;
+    }
+
+    const userId = req.user?.id || 'usr_mitrajit';
+
+    try {
+      const result = await storeService.addCampaign(
+        {
+          subject,
+          body,
+          recipients,
+          status: status === 'sent' ? 'sent' : 'scheduled',
+          startTime,
+          delaySeconds: Number(delaySeconds) || 5,
+          hourlyLimit: Number(hourlyLimit) || 50,
+          attachments,
+        },
+        userId
+      );
 
       res.json({
         success: true,

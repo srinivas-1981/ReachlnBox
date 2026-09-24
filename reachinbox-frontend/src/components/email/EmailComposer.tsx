@@ -144,7 +144,7 @@ export const EmailComposer: React.FC = () => {
 
   const applyPreset = (presetHours: number, label: string) => {
     const d = new Date();
-    d.setDate(d.getDate() + 1); // tomorrow
+    d.setDate(d.getDate() + 1);
     d.setHours(presetHours, 0, 0, 0);
     handleConfigChange('startTime', formatDateForInput(d));
     setIsSendLaterOpen(false);
@@ -232,7 +232,7 @@ export const EmailComposer: React.FC = () => {
 
   return (
     <div className="space-y-5">
-      {/* Top Action Bar (Matching Screenshot Panels 5, 6, 7) */}
+
       <div className="flex items-center justify-between pb-3.5 border-b border-slate-200 bg-white px-2">
         <div className="flex items-center gap-2.5">
           <Link
@@ -248,9 +248,8 @@ export const EmailComposer: React.FC = () => {
           </h1>
         </div>
 
-        {/* Right Action Icons & Primary Green Send Button */}
         <div className="flex items-center gap-2 relative">
-          {/* Attachment Button */}
+
           <input
             ref={fileInputRef}
             type="file"
@@ -268,7 +267,6 @@ export const EmailComposer: React.FC = () => {
             <Paperclip className="h-4 w-4" />
           </button>
 
-          {/* Clock icon for Send Later popover */}
           <div className="relative">
             <button
               type="button"
@@ -280,7 +278,6 @@ export const EmailComposer: React.FC = () => {
               <Clock className="h-4 w-4" />
             </button>
 
-            {/* Send Later Popover (Matching Screenshot Panel 5) */}
             {isSendLaterOpen && (
               <div className="absolute right-0 top-9 z-30 w-72 bg-white rounded-lg border border-slate-200 p-4 shadow-xl text-xs space-y-3 animate-in fade-in-50 zoom-in-95">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-2">
@@ -367,7 +364,6 @@ export const EmailComposer: React.FC = () => {
             )}
           </div>
 
-          {/* Send Later / Send Now Primary Action (Green CTA) */}
           <div className="flex items-center gap-1.5">
             <Button
               type="button"
@@ -395,26 +391,23 @@ export const EmailComposer: React.FC = () => {
         </div>
       </div>
 
-      {/* Main 12-Column Layout (Matching Section 10 Specification) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left Column: Form Fields & Writing Area (7-8 cols) */}
+
         <div className="lg:col-span-8 space-y-4">
           <div className="bg-white rounded-lg border border-slate-200/90 shadow-2xs divide-y divide-slate-100">
-            {/* From Field (Matching Screenshot) */}
+
             <div className="flex items-center px-4 py-2.5 text-xs">
               <span className="w-16 text-slate-400 font-medium shrink-0">From</span>
               <div className="flex items-center gap-1.5 font-medium text-slate-700 bg-slate-50 border border-slate-200/80 px-2 py-0.5 rounded text-xs">
                 <span>{fromEmail}</span>
-                <span className="text-slate-400 text-[10px]">▼</span>
+                <span className="text-slate-400 text-[10px]"></span>
               </div>
             </div>
 
-            {/* To Field with Recipient Tags and 'Upload List' Button (Matching Panels 6 & 7) */}
             <div className="flex items-center justify-between px-4 py-2 text-xs gap-2 flex-wrap sm:flex-nowrap">
               <div className="flex items-center gap-2 flex-1 min-w-0 flex-wrap">
                 <span className="w-16 text-slate-400 font-medium shrink-0">To</span>
 
-                {/* Recipient Pills (Green Tags matching screenshot Panel 7) */}
                 {recipients.map((email) => (
                   <span
                     key={email}
@@ -432,7 +425,6 @@ export const EmailComposer: React.FC = () => {
                   </span>
                 ))}
 
-                {/* Inline type input */}
                 <input
                   type="email"
                   value={toInput}
@@ -444,7 +436,6 @@ export const EmailComposer: React.FC = () => {
                 />
               </div>
 
-              {/* Upload List Action Button (Green text with upload icon matching screenshot) */}
               <button
                 type="button"
                 onClick={() => setShowUploadModal((prev) => !prev)}
@@ -455,7 +446,6 @@ export const EmailComposer: React.FC = () => {
               </button>
             </div>
 
-            {/* Subject Input */}
             <div className="flex items-center px-4 py-2.5 text-xs">
               <span className="w-16 text-slate-400 font-medium shrink-0">Subject</span>
               <input
@@ -470,7 +460,6 @@ export const EmailComposer: React.FC = () => {
               />
             </div>
 
-            {/* Inline Throttle Settings (Delay & Hourly Limit matching screenshot Panels 5 & 6) */}
             <div className="flex items-center gap-6 px-4 py-2 bg-slate-50/50 text-xs text-slate-600">
               <div className="flex items-center gap-2">
                 <span className="text-slate-500">Delay between 2 emails:</span>
@@ -498,7 +487,6 @@ export const EmailComposer: React.FC = () => {
               </div>
             </div>
 
-            {/* Writing Area & Rich Text Formatting Toolbar (Matching Screenshot Panels 5 & 6) */}
             <div className="p-4 space-y-3">
               <textarea
                 value={body}
@@ -511,7 +499,6 @@ export const EmailComposer: React.FC = () => {
                 className="w-full text-xs sm:text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none resize-y bg-transparent"
               />
 
-              {/* Compact Formatting Toolbar Below Writing Area (Matching Screenshot) */}
               <div className="pt-3 border-t border-slate-100 flex items-center justify-between flex-wrap gap-2 text-slate-500 text-xs">
                 <div className="flex items-center gap-1">
                   <button
@@ -671,7 +658,6 @@ export const EmailComposer: React.FC = () => {
                 </div>
               </div>
 
-              {/* Uploaded Attachment Card Previews (Matching Screenshot) */}
               {attachments.length > 0 && (
                 <div className="pt-3 border-t border-slate-100 flex items-center gap-3 flex-wrap">
                   {attachments.map((att, i) => (
@@ -680,7 +666,7 @@ export const EmailComposer: React.FC = () => {
                       className="flex items-center gap-2 p-1.5 pr-2.5 rounded border border-slate-200 bg-slate-50 text-xs"
                     >
                       {att.previewUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
+
                         <img
                           src={att.previewUrl}
                           alt={att.name}
@@ -711,9 +697,8 @@ export const EmailComposer: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Column: Delivery / Scheduling Panel (4-5 cols matching Section 10) */}
         <div className="lg:col-span-4 space-y-4">
-          {/* Upload Leads Box (Toggled by Upload List button or inline) */}
+
           <div className="bg-white rounded-lg border border-slate-200/90 p-4 shadow-2xs space-y-3">
             <div className="flex items-center justify-between">
               <h3 className="text-xs font-semibold text-slate-900 uppercase tracking-wider">
@@ -739,7 +724,6 @@ export const EmailComposer: React.FC = () => {
             />
           </div>
 
-          {/* Delivery & Throttling Settings */}
           <ScheduleConfiguration
             values={scheduleConfig}
             errors={{
@@ -750,7 +734,6 @@ export const EmailComposer: React.FC = () => {
             onChange={handleConfigChange}
           />
 
-          {/* Actions Card */}
           <div className="bg-white rounded-lg border border-slate-200/90 p-4 shadow-2xs space-y-3">
             <div className="flex items-center gap-2">
               <Button
@@ -783,7 +766,6 @@ export const EmailComposer: React.FC = () => {
         </div>
       </div>
 
-      {/* Upload Modal (opened via 'Upload List' button) */}
       {showUploadModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-xs p-4">
           <div className="bg-white rounded-xl shadow-xl border border-slate-200 p-5 max-w-lg w-full space-y-4">

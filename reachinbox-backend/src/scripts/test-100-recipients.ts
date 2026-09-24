@@ -19,17 +19,16 @@ interface RateLimitedEmailSample {
 
 async function run100RecipientTest() {
   console.log('========================================================================');
-  console.log('🧪 ReachInbox 100-Recipient Rate-Limiting & Rescheduling Stress Test');
+  console.log(' ReachInbox 100-Recipient Rate-Limiting & Rescheduling Stress Test');
   console.log('========================================================================\n');
 
-  // 1. Initialize DB and verify SMTP
   await initDb();
   const smtpReady = await verifySmtpConnection();
   if (!smtpReady) {
-    console.error('❌ SMTP not ready. Aborting test.');
+    console.error(' SMTP not ready. Aborting test.');
     process.exit(1);
   }
-  console.log('✅ SMTP Connection (Ethereal) verified.');
+  console.log(' SMTP Connection (Ethereal) verified.');
 
   const userId = 'usr_reach_01';
   const rateLimitKey = `ratelimit:user:${userId}:hourly`;
@@ -37,19 +36,17 @@ async function run100RecipientTest() {
   const totalRecipients = 100;
   const delaySeconds = 2;
 
-  // 2. Clean up any existing rate limit key & old test jobs
   await rateLimiter.resetUserLimit(userId);
   await emailQueue.drain();
   await emailQueue.clean(0, 1000, 'delayed');
   await emailQueue.clean(0, 1000, 'wait');
-  console.log(`🧹 Cleaned up Redis rate-limit key and BullMQ queue.\n`);
+  console.log(` Cleaned up Redis rate-limit key and BullMQ queue.\n`);
 
-  // 3. Generate 100 recipients and insert into PostgreSQL
   const campaignId = `camp_100_test_${Date.now()}`;
   const baseTime = Date.now();
   const emailRecords: Array<{ id: string; recipient: string; scheduledAt: string }> = [];
 
-  console.log(`1️⃣ Creating campaign '${campaignId}' with ${totalRecipients} recipients (hourlyLimit = ${hourlyLimit})...`);
+  console.log(`1 Creating campaign '${campaignId}' with ${totalRecipients} recipients (hourlyLimit = ${hourlyLimit})...`);
 
   for (let i = 0; i < totalRecipients; i++) {
     const padNum = String(i + 1).padStart(3, '0');
@@ -79,20 +76,17 @@ async function run100RecipientTest() {
       ]
     );
 
-    // Enqueue in BullMQ with paced delay
     await addEmailJob(emailId, scheduledAt);
   }
 
-  console.log(`✅ Inserted ${totalRecipients} email records into PostgreSQL and enqueued in BullMQ.\n`);
+  console.log(` Inserted ${totalRecipients} email records into PostgreSQL and enqueued in BullMQ.\n`);
 
-  // 4. Start BullMQ Worker
-  console.log('2️⃣ Starting BullMQ Worker...');
+  console.log('2 Starting BullMQ Worker...');
   const worker = startEmailWorker();
   await worker.waitUntilReady();
-  console.log(`✅ BullMQ Worker listening on 'email-dispatch-queue' with concurrency 5.\n`);
+  console.log(` BullMQ Worker listening on 'email-dispatch-queue' with concurrency 5.\n`);
 
-  // 5. Let Batch 1 (First 10 emails) process and let subsequent emails hit rate limit
-  console.log('3️⃣ Processing Batch 1 (Emails 1-10) and verifying Rate-Limiting on remaining emails...');
+  console.log('3 Processing Batch 1 (Emails 1-10) and verifying Rate-Limiting on remaining emails...');
   const waitStart = Date.now();
   while (Date.now() - waitStart < 30000) {
     await new Promise((r) => setTimeout(r, 2000));
@@ -101,15 +95,14 @@ async function run100RecipientTest() {
     );
     const sentCount = parseInt(sentCountRes.rows[0].count, 10);
     const redisCount = await redisClient.zcard(rateLimitKey);
-    console.log(`⏱️ [${Math.round((Date.now() - waitStart) / 1000)}s] Sent: ${sentCount}/${totalRecipients} | Redis Rate Limit: ${redisCount}/${hourlyLimit}`);
+    console.log(` [${Math.round((Date.now() - waitStart) / 1000)}s] Sent: ${sentCount}/${totalRecipients} | Redis Rate Limit: ${redisCount}/${hourlyLimit}`);
 
     if (sentCount >= 10 && redisCount >= 10) {
       break;
     }
   }
 
-  // 6. Inspect BullMQ Queue & Capture Rate-Limited Samples
-  console.log('\n4️⃣ Inspecting BullMQ Queue and Rate-Limited Jobs:');
+  console.log('\n4 Inspecting BullMQ Queue and Rate-Limited Jobs:');
   const delayedJobs = await emailQueue.getDelayed();
   const waitingJobs = await emailQueue.getWaiting();
   const activeJobs = await emailQueue.getActive();
@@ -118,9 +111,8 @@ async function run100RecipientTest() {
   console.log(`   - Waiting Jobs in BullMQ: ${waitingJobs.length}`);
   console.log(`   - Active Jobs in BullMQ:  ${activeJobs.length}`);
 
-  // Select 5 rate-limited samples (e.g., items 11 to 15)
   const rateLimitedSamples: RateLimitedEmailSample[] = [];
-  const sampleIndices = [10, 11, 12, 13, 14]; // 0-indexed (emails 11-15)
+  const sampleIndices = [10, 11, 12, 13, 14];
 
   for (const idx of sampleIndices) {
     const item = emailRecords[idx];
@@ -135,54 +127,47 @@ async function run100RecipientTest() {
     });
   }
 
-  console.log('\n📋 Sample of 5 Rate-Limited Emails in BullMQ:');
+  console.log('\n Sample of 5 Rate-Limited Emails in BullMQ:');
   for (const s of rateLimitedSamples) {
-    console.log(`   📧 [${s.recipient}] ID: ${s.id}`);
+    console.log(`    [${s.recipient}] ID: ${s.id}`);
     console.log(`      - Original DB scheduled_at: ${s.originalScheduledAt}`);
     console.log(`      - BullMQ State:            ${s.bullmqState}`);
     console.log(`      - BullMQ Delay:            ${s.bullmqDelay}ms (~${Math.round(s.bullmqDelay / 1000 / 60)} mins)`);
     console.log(`      - Attempts Made:           ${s.attemptsMade}`);
   }
 
-  // Check UI / Database synchronization
-  console.log('\n🔍 Investigating Database scheduled_at vs BullMQ Delay:');
+  console.log('\n Investigating Database scheduled_at vs BullMQ Delay:');
   const dbSample = await pool.query(`SELECT scheduled_at, status FROM emails WHERE id = $1`, [rateLimitedSamples[0].id]);
   console.log(`   - Database scheduled_at remains: ${dbSample.rows[0].scheduled_at.toISOString()}`);
   console.log(`   - Status in Database:            '${dbSample.rows[0].status}'`);
   console.log(`   - Observation: Database stores the ORIGINAL user-configured schedule time, while BullMQ manages the dynamic rate-limit postponement internally.`);
 
-  // 7. Process all remaining batches by advancing rolling 1-hour window slots
-  console.log('\n5️⃣ Processing Remaining Batches (Advancing rolling window slots)...');
+  console.log('\n5 Processing Remaining Batches (Advancing rolling window slots)...');
   const batchSize = 10;
   const numBatches = Math.ceil(totalRecipients / batchSize);
 
   for (let batch = 1; batch < numBatches; batch++) {
-    console.log(`\n⏳ Simulating 1-hour rolling window expiration for Batch ${batch + 1}/${numBatches}...`);
+    console.log(`\n Simulating 1-hour rolling window expiration for Batch ${batch + 1}/${numBatches}...`);
 
-    // Fetch oldest entries from Redis ZSET and age them past 1 hour
     const zsetEntries = (await (redisClient as any).zrange(rateLimitKey, 0, -1, 'WITHSCORES')) as string[];
-    const expiredTimestamp = Date.now() - (60 * 60 * 1000 + 10000); // 1 hr 10s ago
+    const expiredTimestamp = Date.now() - (60 * 60 * 1000 + 10000);
 
-    // Age the active slots
     for (let i = 0; i < zsetEntries.length; i += 2) {
       const member = zsetEntries[i];
       await (redisClient as any).zadd(rateLimitKey, expiredTimestamp, member);
     }
 
-    // Clean aged entries from Redis using Lua script logic
     await redisClient.zremrangebyscore(rateLimitKey, '-inf', Date.now() - (60 * 60 * 1000));
 
-    // Release next batch of delayed jobs in BullMQ
     const startIdx = batch * batchSize;
     const endIdx = Math.min(startIdx + batchSize, totalRecipients);
 
     for (let i = startIdx; i < endIdx; i++) {
       const item = emailRecords[i];
-      // Add job with slight pacing to respect external Ethereal SMTP server limits
+
       await addEmailJob(item.id, null, (i - startIdx) * 350);
     }
 
-    // Wait for batch to process
     const batchWaitStart = Date.now();
     while (Date.now() - batchWaitStart < 35000) {
       await new Promise((r) => setTimeout(r, 1000));
@@ -191,14 +176,13 @@ async function run100RecipientTest() {
       );
       const currentSent = parseInt(sentCountRes.rows[0].count, 10);
       if (currentSent >= endIdx) {
-        console.log(`   ✅ Batch ${batch + 1} processed! Total Sent so far: ${currentSent}/${totalRecipients}`);
+        console.log(`    Batch ${batch + 1} processed! Total Sent so far: ${currentSent}/${totalRecipients}`);
         break;
       }
     }
   }
 
-  // 8. Final PostgreSQL & BullMQ Status Verification
-  console.log('\n6️⃣ Compiling Final Comprehensive Metrics...');
+  console.log('\n6 Compiling Final Comprehensive Metrics...');
 
   const finalDbMetrics = await pool.query(`
     SELECT
@@ -218,13 +202,11 @@ async function run100RecipientTest() {
   const totalProcessing = parseInt(dbRow.processing, 10);
   const totalFailed = parseInt(dbRow.failed, 10);
 
-  // BullMQ Counts
   const bmqWaiting = await emailQueue.getWaitingCount();
   const bmqDelayed = await emailQueue.getDelayedCount();
   const bmqCompleted = await emailQueue.getCompletedCount();
   const bmqFailed = await emailQueue.getFailedCount();
 
-  // Check 5 Sample emails final status
   for (const s of rateLimitedSamples) {
     const res = await pool.query(
       `SELECT status, sent_at, provider_message_id FROM emails WHERE id = $1`,
@@ -236,14 +218,13 @@ async function run100RecipientTest() {
     s.providerMessageId = row.provider_message_id;
   }
 
-  // Duplicate Check
   const messageIdCheck = await pool.query(
     `SELECT provider_message_id, COUNT(*) FROM emails WHERE id LIKE 'sch_100t_${baseTime}_%' GROUP BY provider_message_id HAVING COUNT(*) > 1`
   );
   const duplicatesCount = messageIdCheck.rows.length;
 
   console.log('\n========================================================================');
-  console.log('📊 FINAL 100-RECIPIENT TEST REPORT');
+  console.log(' FINAL 100-RECIPIENT TEST REPORT');
   console.log('========================================================================');
   console.log(`1. Total emails created:    ${totalEmails}`);
   console.log(`2. Total sent:              ${totalSent}`);
@@ -258,10 +239,10 @@ async function run100RecipientTest() {
   console.log(`10. Duplicate sends:        ${duplicatesCount === 0 ? '0 (ALL UNIQUE)' : duplicatesCount}`);
   console.log('========================================================================\n');
 
-  console.log('📋 FINAL STATUS OF 5 RATE-LIMITED SAMPLE EMAILS:');
+  console.log(' FINAL STATUS OF 5 RATE-LIMITED SAMPLE EMAILS:');
   console.log('------------------------------------------------------------------------');
   for (const s of rateLimitedSamples) {
-    console.log(`📧 Recipient:              ${s.recipient}`);
+    console.log(` Recipient:              ${s.recipient}`);
     console.log(`   - Original scheduled_at: ${s.originalScheduledAt}`);
     console.log(`   - BullMQ Initial State:  ${s.bullmqState} (Delay: ${s.bullmqDelay}ms)`);
     console.log(`   - Final DB Status:       ${s.finalStatus}`);
@@ -270,19 +251,18 @@ async function run100RecipientTest() {
     console.log('------------------------------------------------------------------------');
   }
 
-  // Clean shutdown
   await worker.close();
   await emailQueue.close();
   await redisClient.quit();
   await pool.end();
 
   const success = totalSent === 100 && totalScheduled === 0 && totalProcessing === 0 && totalFailed === 0 && duplicatesCount === 0;
-  console.log(`\n🎉 Test Result: ${success ? 'PASSED - ALL 100 EMAILS DELIVERED WITH ZERO ERRORS / DUPLICATES' : 'FAILED'}`);
+  console.log(`\n Test Result: ${success ? 'PASSED - ALL 100 EMAILS DELIVERED WITH ZERO ERRORS / DUPLICATES' : 'FAILED'}`);
   process.exit(success ? 0 : 1);
 }
 
 run100RecipientTest().catch(async (err) => {
-  console.error('❌ Test failed with exception:', err);
+  console.error(' Test failed with exception:', err);
   await redisClient.quit().catch(() => {});
   await pool.end().catch(() => {});
   process.exit(1);

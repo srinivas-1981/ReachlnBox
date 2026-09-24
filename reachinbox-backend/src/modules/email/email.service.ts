@@ -25,10 +25,7 @@ export interface SendEmailResult {
 }
 
 export class EmailService {
-  /**
-   * Dispatches email via Nodemailer transporter.
-   * Free of queue logic or rate-limiting logic.
-   */
+
   async sendEmail(options: SendEmailOptions): Promise<SendEmailResult> {
     const mailOptions = {
       from: options.from || config.smtp.from,

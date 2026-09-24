@@ -4,11 +4,11 @@ import { optionalAuthenticate } from '../middlewares/auth.middleware';
 
 const router = Router();
 
-// Google OAuth endpoints
 router.get('/google', (req, res) => authController.initiateGoogleAuth(req, res));
 router.get('/google/callback', (req, res) => authController.handleGoogleCallback(req, res));
 
-// User profile & session management
+router.post('/login', (req, res) => authController.login(req, res));
+
 router.get('/me', optionalAuthenticate, (req, res) => authController.getMe(req, res));
 router.put('/me', optionalAuthenticate, (req, res) => authController.updateMe(req, res));
 router.patch('/me', optionalAuthenticate, (req, res) => authController.updateMe(req, res));
