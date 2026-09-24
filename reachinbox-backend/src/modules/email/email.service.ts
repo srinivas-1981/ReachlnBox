@@ -37,8 +37,12 @@ export class EmailService {
       attachments: options.attachments,
     };
 
+    const start = Date.now();
+    console.log(`[SMTP] sendMail start: to=${options.to}, subject="${options.subject}"`);
     try {
       const info = await transporter.sendMail(mailOptions);
+      const elapsedMs = Date.now() - start;
+      console.log(`[SMTP] sendMail completed: to=${options.to}, messageId=${info.messageId || 'unknown'}, elapsedMs=${elapsedMs}`);
       const previewUrl = nodemailer.getTestMessageUrl(info);
 
       return {
@@ -49,7 +53,8 @@ export class EmailService {
         rejected: (info.rejected || []) as string[],
       };
     } catch (err: any) {
-      console.error(`[SMTP] sendMail ERROR: host=${config.smtp.host}, port=${config.smtp.port}, secure=${config.smtp.secure}, userExists=${Boolean(config.smtp.user)}, code=${err?.code || 'UNKNOWN'}, message=${err?.message || err}`);
+      const elapsedMs = Date.now() - start;
+      console.error(`[SMTP] sendMail failed: to=${options.to}, elapsedMs=${elapsedMs}, code=${err?.code || 'UNKNOWN'}, message=${err?.message || err}`);
       throw err;
     }
   }
