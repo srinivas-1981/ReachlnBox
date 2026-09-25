@@ -68,7 +68,6 @@ export default function DashboardPage() {
   ];
 
   const filteredEmails = allEmails.filter((email) => {
-
     if (activeTab === 'scheduled' && email.type !== 'scheduled') return false;
     if (activeTab === 'sent' && email.type !== 'sent') return false;
 
@@ -85,11 +84,10 @@ export default function DashboardPage() {
 
   return (
     <PageContainer maxWidth="wide">
-
+      {/* Top Search & Filter Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 mb-3 border-b border-slate-200/80">
-        <div className="flex items-center gap-2 flex-1 max-w-lg">
-
-          <div className="relative flex-1">
+        <div className="flex items-center gap-2 flex-1 max-w-lg w-full">
+          <div className="relative flex-1 min-w-0">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
             <input
               type="text"
@@ -102,16 +100,17 @@ export default function DashboardPage() {
               <button
                 type="button"
                 onClick={() => setSearchQuery('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs cursor-pointer"
+                aria-label="Clear search"
               >
-
+                &times;
               </button>
             )}
           </div>
 
           <button
             type="button"
-            className="p-1.5 rounded-full border border-slate-200 bg-white text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-colors"
+            className="p-1.5 rounded-full border border-slate-200 bg-white text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-colors shrink-0 cursor-pointer"
             title="Filter settings"
             aria-label="Filter settings"
           >
@@ -119,12 +118,13 @@ export default function DashboardPage() {
           </button>
         </div>
 
-        <div className="flex items-center gap-2 justify-between sm:justify-end">
-          <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200/80">
+        {/* Tab Filters & Action Buttons */}
+        <div className="flex items-center gap-2 flex-wrap justify-between sm:justify-end">
+          <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200/80 shrink-0">
             <button
               type="button"
               onClick={() => setActiveTab('all')}
-              className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors ${
+              className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors cursor-pointer ${
                 activeTab === 'all'
                   ? 'bg-white text-slate-900 shadow-2xs font-semibold'
                   : 'text-slate-600 hover:text-slate-900'
@@ -135,7 +135,7 @@ export default function DashboardPage() {
             <button
               type="button"
               onClick={() => setActiveTab('scheduled')}
-              className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors flex items-center gap-1.5 ${
+              className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors flex items-center gap-1.5 cursor-pointer ${
                 activeTab === 'scheduled'
                   ? 'bg-white text-emerald-800 shadow-2xs font-semibold'
                   : 'text-slate-600 hover:text-slate-900'
@@ -149,7 +149,7 @@ export default function DashboardPage() {
             <button
               type="button"
               onClick={() => setActiveTab('sent')}
-              className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors flex items-center gap-1.5 ${
+              className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors flex items-center gap-1.5 cursor-pointer ${
                 activeTab === 'sent'
                   ? 'bg-white text-emerald-800 shadow-2xs font-semibold'
                   : 'text-slate-600 hover:text-slate-900'
@@ -162,25 +162,27 @@ export default function DashboardPage() {
             </button>
           </div>
 
-          <button
-            type="button"
-            onClick={loadData}
-            className="p-1.5 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
-            title="Refresh inbox"
-            aria-label="Refresh inbox"
-          >
-            <RefreshCw className="h-3.5 w-3.5" />
-          </button>
-
-          <Link href="/dashboard/compose">
-            <Button
-              variant="primary"
-              size="sm"
-              leftIcon={<Plus className="h-3.5 w-3.5" />}
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={loadData}
+              className="p-1.5 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 active:bg-slate-200 transition-colors cursor-pointer"
+              title="Refresh inbox"
+              aria-label="Refresh inbox"
             >
-              Compose
-            </Button>
-          </Link>
+              <RefreshCw className="h-3.5 w-3.5" />
+            </button>
+
+            <Link href="/dashboard/compose">
+              <Button
+                variant="primary"
+                size="sm"
+                leftIcon={<Plus className="h-3.5 w-3.5" />}
+              >
+                Compose
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
 
@@ -209,7 +211,7 @@ export default function DashboardPage() {
           onAction={() => router.push('/dashboard/compose')}
         />
       ) : (
-        <div className="bg-white rounded-lg border border-slate-200 overflow-hidden shadow-2xs divide-y divide-slate-100">
+        <div className="bg-white rounded-lg border border-slate-200 overflow-hidden shadow-2xs divide-y divide-slate-100 min-w-0">
           {filteredEmails.map((email) => (
             <EmailInboxRow
               key={email.id}

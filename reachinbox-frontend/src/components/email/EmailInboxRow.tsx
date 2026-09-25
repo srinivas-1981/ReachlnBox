@@ -45,7 +45,7 @@ export const EmailInboxRow: React.FC<EmailInboxRowProps> = ({
   return (
     <Link
       href={`/dashboard/emails/${email.id}`}
-      className="group flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-3 bg-white hover:bg-slate-50/80 border-b border-slate-100 transition-colors text-xs select-none cursor-pointer overflow-hidden"
+      className="group flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-3 bg-white hover:bg-slate-50/80 border-b border-slate-100 transition-colors text-xs select-none cursor-pointer overflow-hidden min-w-0"
     >
       <button
         type="button"
@@ -65,36 +65,36 @@ export const EmailInboxRow: React.FC<EmailInboxRowProps> = ({
         />
       </button>
 
-      <div className="w-20 sm:w-36 shrink-0 truncate">
-        <span className="font-semibold text-slate-900 group-hover:text-emerald-700 transition-colors">
+      <div className="w-20 sm:w-36 shrink-0 truncate min-w-0">
+        <span className="font-semibold text-slate-900 group-hover:text-emerald-700 transition-colors truncate block">
           To: {email.recipient.includes('@') ? email.recipient.split('@')[0] : email.recipient}
         </span>
       </div>
 
-      <div className="flex-1 sm:flex-initial min-w-0 flex items-center">
+      <div className="flex-1 min-w-0 flex items-center">
         {isScheduled ? (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-amber-50 text-amber-700 border border-amber-200/80 max-w-full sm:max-w-none truncate">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-amber-50 text-amber-700 border border-amber-200/80 max-w-full truncate">
             <Clock className="h-3 w-3 text-amber-600 shrink-0" />
             <span className="truncate">
               {formattedTime(scheduledEmail?.scheduledAt)} • {email.subject} • Scheduled
             </span>
           </span>
         ) : isSent ? (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/80 max-w-full sm:max-w-none truncate">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/80 max-w-full truncate">
             <CheckCircle2 className="h-3 w-3 text-emerald-600 shrink-0" />
             <span className="truncate">
               Sent: {email.subject}
             </span>
           </span>
         ) : isFailed ? (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-rose-50 text-rose-700 border border-rose-200/80 max-w-full sm:max-w-none truncate">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-rose-50 text-rose-700 border border-rose-200/80 max-w-full truncate">
             <AlertCircle className="h-3 w-3 text-rose-600 shrink-0" />
             <span className="truncate">
               Failed: {email.subject}
             </span>
           </span>
         ) : (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200 max-w-full sm:max-w-none truncate">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200 max-w-full truncate">
             <span className="truncate">
               {email.status}: {email.subject}
             </span>

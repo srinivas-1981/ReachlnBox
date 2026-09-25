@@ -30,17 +30,17 @@ export const EmailTable: React.FC<EmailTableProps> = ({
   const isScheduled = type === 'scheduled';
 
   return (
-    <div className="bg-white rounded-lg border border-slate-200 overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="w-full text-left text-xs">
+    <div className="bg-white rounded-lg border border-slate-200 overflow-hidden w-full min-w-0 shadow-2xs">
+      <div className="overflow-x-auto w-full min-w-0">
+        <table className="w-full text-left text-xs min-w-[640px]">
           <thead className="bg-slate-50/70 border-b border-slate-200 text-slate-500 font-medium text-[11px]">
             <tr>
-              <th scope="col" className="py-2.5 px-4 sm:px-6 font-medium w-[26%] min-w-[180px]">Recipient</th>
-              <th scope="col" className="py-2.5 px-4 sm:px-6 font-medium w-[38%] min-w-[240px]">Subject</th>
-              <th scope="col" className="py-2.5 px-4 sm:px-6 font-medium w-[18%] min-w-[150px]">
+              <th scope="col" className="py-2.5 px-4 sm:px-6 font-medium w-[26%] min-w-[170px]">Recipient</th>
+              <th scope="col" className="py-2.5 px-4 sm:px-6 font-medium w-[36%] min-w-[220px]">Subject</th>
+              <th scope="col" className="py-2.5 px-4 sm:px-6 font-medium w-[20%] min-w-[150px]">
                 {isScheduled ? 'Scheduled For' : 'Sent Date'}
               </th>
-              <th scope="col" className="py-2.5 px-4 sm:px-6 font-medium w-[10%] min-w-[100px]">Status</th>
+              <th scope="col" className="py-2.5 px-4 sm:px-6 font-medium w-[10%] min-w-[90px]">Status</th>
               <th scope="col" className="py-2.5 px-4 sm:px-6 font-medium text-right w-[8%] min-w-[80px]">Actions</th>
             </tr>
           </thead>
@@ -56,15 +56,14 @@ export const EmailTable: React.FC<EmailTableProps> = ({
                   onClick={() => router.push(`/dashboard/emails/${email.id}`)}
                   className="hover:bg-slate-50/80 transition-colors group cursor-pointer"
                 >
-
-                  <td className="py-2.5 px-4 sm:px-6 font-medium text-slate-900 group-hover:text-emerald-700 max-w-sm truncate">
+                  <td className="py-2.5 px-4 sm:px-6 font-medium text-slate-900 group-hover:text-emerald-700 max-w-[180px] truncate">
                     <span title={email.recipient}>{email.recipient}</span>
                   </td>
 
-                  <td className="py-2.5 px-4 sm:px-6 text-slate-600 max-w-lg truncate">
+                  <td className="py-2.5 px-4 sm:px-6 text-slate-600 max-w-[240px] truncate">
                     <span title={email.subject}>{email.subject}</span>
                     {sentEmail?.errorMessage && (
-                      <p className="text-[10px] text-rose-600 truncate mt-0.5">
+                      <p className="text-[10px] text-rose-600 truncate mt-0.5" title={sentEmail.errorMessage}>
                         {sentEmail.errorMessage}
                       </p>
                     )}
@@ -89,7 +88,7 @@ export const EmailTable: React.FC<EmailTableProps> = ({
                                 e.stopPropagation();
                                 onPause(email.id);
                               }}
-                              className="p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded transition-colors"
+                              className="p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-100 active:bg-slate-200 rounded transition-colors cursor-pointer"
                               title="Pause scheduling"
                               aria-label="Pause email"
                             >
@@ -104,7 +103,7 @@ export const EmailTable: React.FC<EmailTableProps> = ({
                                 e.stopPropagation();
                                 onResume(email.id);
                               }}
-                              className="p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded transition-colors"
+                              className="p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-100 active:bg-slate-200 rounded transition-colors cursor-pointer"
                               title="Resume scheduling"
                               aria-label="Resume email"
                             >
@@ -119,7 +118,7 @@ export const EmailTable: React.FC<EmailTableProps> = ({
                                 e.stopPropagation();
                                 onDelete(email.id);
                               }}
-                              className="p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded transition-colors"
+                              className="p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 active:bg-rose-100 rounded transition-colors cursor-pointer"
                               title="Delete scheduled email"
                               aria-label="Delete email"
                             >
@@ -136,7 +135,7 @@ export const EmailTable: React.FC<EmailTableProps> = ({
                             e.stopPropagation();
                             onRetry(email.id);
                           }}
-                          className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded transition-colors"
+                          className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 rounded transition-colors cursor-pointer"
                           aria-label="Retry failed email"
                         >
                           <RotateCcw className="h-3 w-3" />

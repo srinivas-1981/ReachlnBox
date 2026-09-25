@@ -23,8 +23,8 @@ export const PageContainer: React.FC<PageContainerProps> = ({
   };
 
   return (
-    <main className="flex-1 min-w-0">
-      <div className={cn('mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 pt-3 sm:pt-4 pb-6 sm:pb-8', maxWidths[maxWidth], className)}>
+    <main className="flex-1 min-w-0 w-full">
+      <div className={cn('mx-auto px-3 sm:px-6 lg:px-8 xl:px-10 pt-3 sm:pt-4 pb-6 sm:pb-8 min-w-0', maxWidths[maxWidth], className)}>
         {children}
       </div>
     </main>

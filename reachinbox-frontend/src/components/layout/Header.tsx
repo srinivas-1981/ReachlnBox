@@ -1,13 +1,14 @@
 'use client';
 
 import React from 'react';
-import { Menu } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { UserMenu } from './UserMenu';
 import { User } from '@/types';
 
 interface HeaderProps {
   user: User;
   onOpenMobileNav: () => void;
+  isMobileNavOpen?: boolean;
   title?: string;
   description?: string;
   action?: React.ReactNode;
@@ -16,22 +17,25 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({
   user,
   onOpenMobileNav,
+  isMobileNavOpen = false,
   title,
   description,
   action,
 }) => {
   return (
-    <header className="sticky top-0 z-20 bg-white border-b border-slate-200/80">
-      <div className="flex items-center justify-between h-11 sm:h-12 px-4 sm:px-6 lg:px-8 xl:px-10">
-
-        <div className="flex items-center gap-3 min-w-0">
+    <header className="sticky top-0 z-20 bg-white border-b border-slate-200/80 shrink-0">
+      <div className="flex items-center justify-between h-12 sm:h-12 px-3 sm:px-6 lg:px-8 xl:px-10">
+        {/* Left Side: Mobile Hamburger & Title */}
+        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
           <button
             type="button"
             onClick={onOpenMobileNav}
-            className="md:hidden p-1.5 rounded-md text-slate-500 hover:text-slate-800 hover:bg-slate-100 focus:outline-none focus:ring-1 focus:ring-slate-300"
-            aria-label="Open mobile navigation drawer"
+            className="md:hidden flex items-center justify-center h-10 w-10 -ml-1 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 active:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 transition-colors cursor-pointer"
+            aria-label={isMobileNavOpen ? 'Close navigation drawer' : 'Open mobile navigation drawer'}
+            aria-expanded={isMobileNavOpen}
+            aria-controls="mobile-navigation-drawer"
           >
-            <Menu className="h-5 w-5" />
+            {isMobileNavOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
 
           {title && (
@@ -48,7 +52,8 @@ export const Header: React.FC<HeaderProps> = ({
           )}
         </div>
 
-        <div className="flex items-center gap-2.5">
+        {/* Right Side: Actions & Mobile Profile Menu */}
+        <div className="flex items-center gap-2 sm:gap-2.5">
           {action && <div className="shrink-0">{action}</div>}
           <div className="shrink-0 md:hidden">
             <UserMenu user={user} collapsed position="bottom" />

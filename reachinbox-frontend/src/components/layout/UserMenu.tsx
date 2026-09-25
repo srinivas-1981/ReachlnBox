@@ -44,12 +44,11 @@ export const UserMenu: React.FC<UserMenuProps> = ({
 
   return (
     <div className="relative" ref={menuRef}>
-
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          'flex items-center gap-3 w-full p-2 rounded-lg hover:bg-slate-100 transition-colors text-left focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer',
+          'flex items-center gap-2.5 sm:gap-3 w-full p-2 rounded-lg hover:bg-slate-100 active:bg-slate-200 transition-colors text-left focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer select-none',
           collapsed ? 'justify-center p-1.5' : ''
         )}
         aria-expanded={isOpen}
@@ -60,14 +59,14 @@ export const UserMenu: React.FC<UserMenuProps> = ({
           {user.avatarUrl ? (
             <Image
               src={user.avatarUrl}
-              alt={user.name}
+              alt={user.name || 'User avatar'}
               fill
               sizes="32px"
               className="object-cover"
             />
           ) : (
             <div className="h-full w-full flex items-center justify-center bg-emerald-100 text-emerald-700 font-semibold text-xs">
-              {user.name.charAt(0)}
+              {(user.name && user.name.charAt(0)) || 'U'}
             </div>
           )}
         </div>
@@ -76,14 +75,14 @@ export const UserMenu: React.FC<UserMenuProps> = ({
           <>
             <div className="min-w-0 flex-1">
               <p className="text-xs font-semibold text-slate-900 truncate leading-tight">
-                {user.name}
+                {user.name || 'Workspace User'}
               </p>
               <p className="text-[11px] text-slate-500 truncate leading-tight mt-0.5">
-                {user.email}
+                {user.email || 'user@reachinbox.ai'}
               </p>
             </div>
             <ChevronDown
-              className={cn('h-4 w-4 text-slate-400 transition-transform duration-150', isOpen && 'rotate-180')}
+              className={cn('h-4 w-4 text-slate-400 transition-transform duration-150 shrink-0', isOpen && 'rotate-180')}
             />
           </>
         )}
@@ -92,15 +91,15 @@ export const UserMenu: React.FC<UserMenuProps> = ({
       {isOpen && (
         <div
           className={cn(
-            'w-56 bg-white rounded-xl shadow-xl border border-slate-200 py-1.5 z-50 text-left animate-in fade-in zoom-in-95 duration-150',
+            'w-56 max-w-[calc(100vw-2rem)] bg-white rounded-xl shadow-xl border border-slate-200 py-1.5 z-50 text-left animate-in fade-in zoom-in-95 duration-150',
             position === 'bottom'
               ? 'absolute right-0 top-full mt-2'
               : 'absolute md:left-full md:bottom-0 md:ml-3 md:right-auto md:mb-0 left-0 bottom-full mb-2 right-auto'
           )}
         >
           <div className="px-3 py-2 border-b border-slate-100">
-            <p className="text-xs font-medium text-slate-900 truncate">{user.name}</p>
-            <p className="text-[11px] text-slate-500 truncate">{user.email}</p>
+            <p className="text-xs font-semibold text-slate-900 truncate">{user.name || 'User'}</p>
+            <p className="text-[11px] text-slate-500 truncate">{user.email || 'user@reachinbox.ai'}</p>
             {user.role && (
               <span className="inline-block mt-1 text-[10px] uppercase font-semibold tracking-wider text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">
                 {user.role}
@@ -117,7 +116,7 @@ export const UserMenu: React.FC<UserMenuProps> = ({
               }}
               className="flex items-center gap-2.5 px-3 py-2 text-xs text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors"
             >
-              <Settings className="h-4 w-4 text-slate-400" />
+              <Settings className="h-4 w-4 text-slate-400 shrink-0" />
               <span>Settings</span>
             </Link>
           </div>
@@ -131,7 +130,7 @@ export const UserMenu: React.FC<UserMenuProps> = ({
               }}
               className="flex items-center gap-2.5 w-full text-left px-3 py-2 text-xs text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
             >
-              <LogOut className="h-4 w-4 text-rose-500" />
+              <LogOut className="h-4 w-4 text-rose-500 shrink-0" />
               <span>Log out</span>
             </button>
           </div>
@@ -142,7 +141,7 @@ export const UserMenu: React.FC<UserMenuProps> = ({
         isOpen={showLogoutModal}
         onClose={() => setShowLogoutModal(false)}
         title="Sign out of ReachInbox?"
-        description="You will be returned to the login screen and will need to authenticate with Google again."
+        description="You will be returned to the login screen and will need to authenticate again."
         confirmLabel="Sign out"
         confirmVariant="danger"
         isConfirmLoading={isLoggingOut}

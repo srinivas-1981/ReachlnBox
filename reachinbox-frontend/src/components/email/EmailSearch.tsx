@@ -42,7 +42,7 @@ export const EmailSearch: React.FC<EmailSearchProps> = ({
   };
 
   return (
-    <div className={cn('relative w-full max-w-xs', className)}>
+    <div className={cn('relative w-full sm:max-w-xs min-w-0', className)}>
       <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400">
         {isSearching ? (
           <Loader2 className="h-3.5 w-3.5 animate-spin text-slate-500" />

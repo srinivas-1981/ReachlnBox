@@ -69,9 +69,8 @@ export const Modal: React.FC<ModalProps> = ({
       aria-modal="true"
       aria-labelledby="modal-title"
       aria-describedby={description ? 'modal-description' : undefined}
-      className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-3 sm:p-4"
     >
-
       <div
         className="fixed inset-0 bg-slate-900/30 backdrop-blur-xs transition-opacity duration-150"
         onClick={isConfirmLoading ? undefined : onClose}
@@ -81,11 +80,10 @@ export const Modal: React.FC<ModalProps> = ({
       <div
         ref={modalRef}
         className={cn(
-          'relative w-full bg-white rounded-lg shadow-lg border border-slate-200 p-5 z-10 text-left transition-all duration-150 animate-in fade-in zoom-in-95',
+          'relative w-full bg-white rounded-xl shadow-xl border border-slate-200 p-4 sm:p-5 z-10 text-left transition-all duration-150 animate-in fade-in zoom-in-95 max-h-[90dvh] overflow-y-auto min-w-0',
           maxWidths[maxWidth]
         )}
       >
-
         <div className="flex items-start justify-between pb-2.5 border-b border-slate-100">
           <div>
             <h3 id="modal-title" className="text-sm font-semibold text-slate-900">
@@ -101,7 +99,7 @@ export const Modal: React.FC<ModalProps> = ({
             type="button"
             onClick={onClose}
             disabled={isConfirmLoading}
-            className="text-slate-400 hover:text-slate-600 rounded p-1 transition-colors -mr-1"
+            className="text-slate-400 hover:text-slate-600 rounded p-1 transition-colors -mr-1 cursor-pointer"
             aria-label="Close dialog"
           >
             <X className="h-4 w-4" />

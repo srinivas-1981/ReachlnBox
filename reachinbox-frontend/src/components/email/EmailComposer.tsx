@@ -679,7 +679,7 @@ export const EmailComposer: React.FC = () => {
                       className="flex items-center gap-2 p-1.5 pr-2.5 rounded border border-slate-200 bg-slate-50 text-xs"
                     >
                       {att.previewUrl ? (
-
+                        /* eslint-disable-next-line @next/next/no-img-element */
                         <img
                           src={att.previewUrl}
                           alt={att.name}
@@ -781,7 +781,7 @@ export const EmailComposer: React.FC = () => {
 
       {showUploadModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-xl shadow-xl border border-slate-200 p-5 max-w-lg w-full space-y-4">
+          <div className="bg-white rounded-xl shadow-xl border border-slate-200 p-5 max-w-lg w-full max-h-[90dvh] overflow-y-auto space-y-4">
             <div className="flex items-center justify-between pb-2 border-b border-slate-100">
               <h3 className="text-sm font-semibold text-slate-900">Upload Leads CSV / List</h3>
               <button
