@@ -52,11 +52,21 @@ export function validateProductionConfig(): void {
   }
 }
 
+const validTransports = ['simulated', 'ethereal'] as const;
+export type EmailTransportType = typeof validTransports[number];
+
+const rawTransport = (process.env.EMAIL_TRANSPORT || 'simulated').trim().toLowerCase();
+if (!validTransports.includes(rawTransport as EmailTransportType)) {
+  throw new Error(`Invalid EMAIL_TRANSPORT: "${process.env.EMAIL_TRANSPORT}". Valid options are "simulated" or "ethereal".`);
+}
+export const emailTransport: EmailTransportType = rawTransport as EmailTransportType;
+
 export const config = {
   port: parseInt(process.env.PORT || '5000', 10),
   nodeEnv: process.env.NODE_ENV || 'development',
   frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3000',
   databaseUrl: process.env.DATABASE_URL || 'postgresql://postgres:password@localhost:5432/reachinbox',
+  emailTransport,
 
   google: {
     clientId: process.env.GOOGLE_CLIENT_ID || '',

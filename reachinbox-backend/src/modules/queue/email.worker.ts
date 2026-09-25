@@ -59,7 +59,7 @@ export async function processEmailJob(job: Job<EmailJobData>): Promise<void> {
       ? `"${email.senderName}" <${config.smtp.from.replace(/^.*<([^>]+)>.*$/, '$1') || config.smtp.user}>`
       : config.smtp.from;
 
-    console.log(`[WORKER] starting SMTP send: ${scheduledEmailId}`);
+    console.log(`[WORKER] starting email delivery (${emailService.transportName}): ${scheduledEmailId}`);
     const sendResult = await emailService.sendEmail({
       from: fromAddress,
       replyTo: email.senderEmail || undefined,
@@ -79,11 +79,13 @@ export async function processEmailJob(job: Job<EmailJobData>): Promise<void> {
           }))
         : undefined,
     });
-    console.log(`[WORKER] SMTP send completed: ${scheduledEmailId}`);
-    console.log(`[WORKER] provider message ID: ${sendResult.messageId}`);
+    console.log(`[DELIVERY] transport=${sendResult.transport}`);
+    console.log(`[DELIVERY] email=${scheduledEmailId}`);
+    console.log(`[DELIVERY] provider_message_id=${sendResult.providerMessageId}`);
+    console.log(`[DELIVERY] status=sent`);
 
     console.log(`[WORKER] updating database to sent: ${scheduledEmailId}`);
-    const updated = await storeService.markEmailSent(scheduledEmailId, sendResult.messageId);
+    const updated = await storeService.markEmailSent(scheduledEmailId, sendResult.providerMessageId);
     if (updated) {
       console.log(`[WORKER] database updated to sent: ${scheduledEmailId}`);
     } else {
@@ -96,7 +98,7 @@ export async function processEmailJob(job: Job<EmailJobData>): Promise<void> {
     const isFinalAttempt = (job.attemptsMade + 1) >= (job.opts.attempts || 3);
     if (isFinalAttempt) {
       console.log(`[WORKER] Final attempt reached. Marking email ${scheduledEmailId} as failed in database.`);
-      await storeService.markEmailFailed(scheduledEmailId, err?.message || 'SMTP delivery failure');
+      await storeService.markEmailFailed(scheduledEmailId, err?.message || 'Email delivery failure');
     } else {
       console.log(`[WORKER] Resetting email ${scheduledEmailId} status back to scheduled for BullMQ retry.`);
       await storeService.resetEmailToScheduled(scheduledEmailId);

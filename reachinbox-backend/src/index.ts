@@ -14,8 +14,15 @@ async function bootstrap() {
     await initDb();
     console.log('PostgreSQL initialization complete.');
 
-    console.log(' Performing non-blocking SMTP transporter check in background...');
-    verifySmtpConnection().catch((e) => console.warn('SMTP verification background notice:', e?.message || e));
+    if (config.emailTransport === 'simulated') {
+      console.log('[DELIVERY] Email transport: simulated');
+      console.log('[DELIVERY] External SMTP disabled');
+    } else if (config.emailTransport === 'ethereal') {
+      console.log('[DELIVERY] Email transport: ethereal');
+      console.log('[DELIVERY] SMTP provider enabled');
+      console.log(' Performing non-blocking SMTP transporter check in background...');
+      verifySmtpConnection().catch((e) => console.warn('[SMTP] Verification background notice:', e?.message || e));
+    }
 
     console.log(' Starting BullMQ email delivery worker...');
     const worker = startEmailWorker();

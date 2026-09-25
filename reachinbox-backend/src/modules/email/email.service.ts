@@ -1,62 +1,42 @@
-import nodemailer from 'nodemailer';
-import { transporter } from './smtp.client';
 import { config } from '../../config/env';
+import { EmailDeliveryProvider, SendEmailOptions, DeliveryResult } from './delivery.provider';
+import { SimulatedEmailProvider } from './simulated.provider';
+import { EtherealEmailProvider } from './ethereal.provider';
 
-export interface SendEmailOptions {
-  from?: string;
-  replyTo?: string;
-  to: string;
-  subject: string;
-  text: string;
-  html?: string;
-  attachments?: Array<{
-    filename: string;
-    content?: string | Buffer;
-    path?: string;
-  }>;
-}
-
-export interface SendEmailResult {
-  messageId: string;
-  previewUrl: string | false;
-  response: string;
-  accepted: string[];
-  rejected: string[];
-}
+export { SendEmailOptions, DeliveryResult, EmailDeliveryProvider } from './delivery.provider';
 
 export class EmailService {
+  private provider: EmailDeliveryProvider;
 
-  async sendEmail(options: SendEmailOptions): Promise<SendEmailResult> {
-    const mailOptions = {
-      from: options.from || config.smtp.from,
-      replyTo: options.replyTo,
-      to: options.to,
-      subject: options.subject,
-      text: options.text,
-      html: options.html,
-      attachments: options.attachments,
-    };
-
-    const start = Date.now();
-    console.log('[SMTP] sendMail start');
-    try {
-      const info = await transporter.sendMail(mailOptions);
-      const elapsedMs = Date.now() - start;
-      console.log(`[SMTP] sendMail completed: elapsedMs=${elapsedMs}`);
-      const previewUrl = nodemailer.getTestMessageUrl(info);
-
-      return {
-        messageId: info.messageId || `msg_${Date.now()}`,
-        previewUrl,
-        response: info.response || '',
-        accepted: (info.accepted || []) as string[],
-        rejected: (info.rejected || []) as string[],
-      };
-    } catch (err: any) {
-      const elapsedMs = Date.now() - start;
-      console.error(`[SMTP] sendMail failed: elapsedMs=${elapsedMs}, code=${err?.code || 'UNKNOWN'}, message=${err?.message || err}`);
-      throw err;
+  constructor(customProvider?: EmailDeliveryProvider) {
+    if (customProvider) {
+      this.provider = customProvider;
+    } else {
+      this.provider = this.createProviderFromConfig();
     }
+  }
+
+  private createProviderFromConfig(): EmailDeliveryProvider {
+    if (config.emailTransport === 'ethereal') {
+      return new EtherealEmailProvider();
+    }
+    return new SimulatedEmailProvider();
+  }
+
+  public getProvider(): EmailDeliveryProvider {
+    return this.provider;
+  }
+
+  public setProvider(provider: EmailDeliveryProvider): void {
+    this.provider = provider;
+  }
+
+  public get transportName(): 'simulated' | 'ethereal' {
+    return this.provider.transportName;
+  }
+
+  async sendEmail(options: SendEmailOptions): Promise<DeliveryResult> {
+    return this.provider.send(options);
   }
 }
 
