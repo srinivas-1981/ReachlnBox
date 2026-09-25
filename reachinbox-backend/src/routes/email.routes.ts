@@ -9,6 +9,7 @@ router.use(authenticate);
 router.get('/metrics', (req, res) => emailController.getMetrics(req, res));
 router.get('/scheduled', (req, res) => emailController.getScheduled(req, res));
 router.get('/sent', (req, res) => emailController.getSent(req, res));
+router.get('/search', (req, res) => emailController.search(req, res));
 router.get('/:id', (req, res) => emailController.getById(req, res));
 
 router.post('/scheduled/:id/pause', (req, res) => emailController.pauseScheduled(req, res));

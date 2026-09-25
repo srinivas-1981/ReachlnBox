@@ -44,6 +44,25 @@ export class EmailController {
     }
   }
 
+  async search(req: AuthenticatedRequest, res: Response): Promise<void> {
+    try {
+      const query = (typeof req.query.q === 'string' ? req.query.q : typeof req.query.search === 'string' ? req.query.search : '').trim();
+      const userId = req.user?.id;
+      const scheduled = await storeService.getScheduled(query, userId);
+      const sent = await storeService.getSent(query, userId);
+      res.json({
+        success: true,
+        data: {
+          scheduled,
+          sent,
+          totalMatches: scheduled.length + sent.length,
+        },
+      });
+    } catch (err: any) {
+      res.status(500).json({ success: false, message: err.message });
+    }
+  }
+
   async getById(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
       const id = req.params.id as string;

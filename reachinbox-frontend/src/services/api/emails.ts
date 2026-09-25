@@ -51,7 +51,7 @@ export const emailService = {
     try {
       await apiClient<void>(`/emails/scheduled/${id}/resume`, {
         method: 'POST',
-        data: scheduledAt ? { scheduled_at: scheduledAt } : undefined,
+        body: scheduledAt ? JSON.stringify({ scheduled_at: scheduledAt }) : undefined,
       });
     } catch {
 
@@ -62,7 +62,7 @@ export const emailService = {
     try {
       await apiClient<void>(`/emails/scheduled/${id}/reschedule`, {
         method: 'POST',
-        data: { scheduled_at: scheduledAt },
+        body: JSON.stringify({ scheduled_at: scheduledAt }),
       });
     } catch {
 
